@@ -1,35 +1,76 @@
-Untitled
-================
-Alby
-26/02/2021
 
-## R Markdown
+# UWI-CouRse
 
-This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see <http://rmarkdown.rstudio.com>.
+## Statistics for Environmental and Climate Analysis with R
 
-When you click the **Knit** button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like this:
+To understand the water cycle and climate changes impacts in urban
+environments, whether from a hydrological, ecological or climatological
+point of view, it is essential to have statistical skills to deal with
+highly dynamic spatiotemporal variables. This course covers from
+statistical concepts to applied methods applied to environmental and
+climactic variables while helping the participants develop their skills
+in R programming and data processing. The R codes and key references to
+master the techniques and tools included in this course will be
+available for the participants through a GitHub repository. In the end,
+a workshop will allow participants to use their data and a method of
+their choice with the instructors’ support.
 
-``` r
-summary(cars)
-```
+**Duration:** 1.5 ECTS (15x45 min)
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+**Date:** April
 
-## Including Plots
+### **Course program:**
 
-You can also embed plots, for example:
+**Introduction to R** *(non-compulsory)*\[1\]
 
-![](test22_files/figure-gfm/r%20pressure-1.png)<!-- -->
+  - R studio and R base: *R environment and essential functions*
+  - R packages: *finding packages that suit your needs*
+  - R markdown: *working with markdown files throughout the course*
 
-Note that the `echo = FALSE` parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.
+**Data science overview**
+
+  - Data structure: *determining statistics based on types of variables*
+  - Data visualization: *plotting cool graphs according to the aim and
+    variable type*
+  - Exploratory Analysis: *finding relationships and identifying
+    variable’s behaviour*
+  - Modelling approaches: *explaining, predicting or forecasting?*
+
+**Core concepts of statistics**
+
+  - Random variables and probability distribution: *beyond Normal*
+  - Confidence intervals and hypothesis testing: *samples, parameters
+    and estimates*
+  - Statistical Inference: *where all statistical conclusions rely on,
+    classical or Bayesian*
+  - Data modelling: *general assumptions, model selection and accuracy*
+
+**Modelling climate events and time-series data**
+
+  - Time-series data: *working with dates and time in R*
+  - Extreme Values Analysis: *changes and intensity of extreme (or rare)
+    events*
+  - Time-series modelling: *dealing with seasonality and trends to
+    forecast with ARIMA models*
+
+**Regression models**
+
+  - Generalized Additive Model (GAM): *smoothing your issues, study case
+    application*
+  - Machine Learning algorithms: *tuning parameters to control model
+    complexity*
+  - Support Vector Machine (SVM): *tuning cost and epsilon, study case
+    application*
+
+**Other statistical methods**
+
+  - Multivariate Analysis: *Principal Components (PCA/PLSR), Cluster and
+    Factorial Analysis*
+  - What is still missing: *an overview of uncovering subjects such as
+    spatial Analysis and DOE*
+
+**Workshop** \* Hands-on: *working on your data and interest*
+
+1.  non\*compulsory module with a duration of 2x45 minutes offers to
+    help  
+    the participants who are not familiar with R and R studio.
