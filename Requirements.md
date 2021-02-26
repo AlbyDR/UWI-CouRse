@@ -25,11 +25,11 @@ required to be installed in advance.
 
 ## Installing
 
-Started downloading and installing R
-[Windows](https://cran.r-project.org/bin/windows/) or
-[Mac](https://cran.r-project.org/bin/macosx/). Visit the FAQ sections
-for Windows and Mac if you have any doubt.
+1.  Started downloading and installing R
+    [Windows](https://cran.r-project.org/bin/windows/) or
+    [Mac](https://cran.r-project.org/bin/macosx/). Visit the FAQ
+    sections for Windows and Mac if you have any doubt.
 
-Then install [RStudio](https://rstudio.com/) Desktop as well. RStudio is
-available for Windows, macOS, and Linux, download
-[here](https://rstudio.com/products/rstudio/download/#download).
+2.  Then install [RStudio](https://rstudio.com/) Desktop as well.
+    RStudio is available for Windows, macOS, and Linux, download
+    [here](https://rstudio.com/products/rstudio/download/#download).
