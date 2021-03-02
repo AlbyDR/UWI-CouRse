@@ -18,17 +18,18 @@ with another IDE or you are advanced user of R you may not need to
 install Rstudio (but I do).
 
 We also will use many contributed packages for different statistical
-technique and data processing requirement. For more detail see [CRAN
+technique and data processing. For more detail see [CRAN
 package repository](https://cran.r-project.org/) (The Comprehensive R
-Archive Network). Each course section we will include the packages
-required to be installed in advance.
+Archive Network). For each course section we will include the packages
+required to be installed in advance in a page named Scope_&_Prerequisites.
 
 ## Installing
 
 1.  Started downloading and installing R
     [Windows](https://cran.r-project.org/bin/windows/) or
     [Mac](https://cran.r-project.org/bin/macosx/). Visit the FAQ
-    sections for Windows and Mac if you have any doubt.
+    sections for Windows and Mac if you have any doubt or [this chapter here]   
+    (https://rstudio-education.github.io/hopr/starting.html).
 
 2.  Then install [RStudio](https://rstudio.com/) Desktop as well.
     RStudio is available for Windows, macOS, and Linux, download
