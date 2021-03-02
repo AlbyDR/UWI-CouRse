@@ -28,8 +28,7 @@ required to be installed in advance in a page named Scope_&_Prerequisites.
 1.  Started downloading and installing R
     [Windows](https://cran.r-project.org/bin/windows/) or
     [Mac](https://cran.r-project.org/bin/macosx/). Visit the FAQ
-    sections for Windows and Mac if you have any doubt or [this chapter here]   
-    (https://rstudio-education.github.io/hopr/starting.html).
+    sections for Windows and Mac if you have any doubt or [this chapter here](https://rstudio-education.github.io/hopr/starting.html).
 
 2.  Then install [RStudio](https://rstudio.com/) Desktop as well.
     RStudio is available for Windows, macOS, and Linux, download
