@@ -1,9 +1,9 @@
 Requirements
 ================
-AlbyDR
+UWI-couRse
 26/02/2021
 
-# R and RStudio
+## R and RStudio
 
 Let started with [R](https://www.r-project.org/), a powerful open-source
 software/language environment for statistics analysis ([R Development
@@ -23,13 +23,14 @@ package repository](https://cran.r-project.org/) (The Comprehensive R
 Archive Network). For each course section we will include the packages
 required to be installed in advance in a page named Scope_&_Prerequisites.
 
-## Installing
+### Installing
 
 1.  Started downloading and installing R
     [Windows](https://cran.r-project.org/bin/windows/) or
-    [Mac](https://cran.r-project.org/bin/macosx/). Visit the FAQ
-    sections for Windows and Mac if you have any doubt or [this chapter here](https://rstudio-education.github.io/hopr/starting.html).
+    [Mac](https://cran.r-project.org/bin/macosx/).
 
 2.  Then install [RStudio](https://rstudio.com/) Desktop as well.
     RStudio is available for Windows, macOS, and Linux, download
     [here](https://rstudio.com/products/rstudio/download/#download).
+    
+If you have any doubt, visit the FAQ sections for Windows and Mac available in both official sites or the chapter about installation in the book *Hands-On Programming with R* [here](https://rstudio-education.github.io/hopr/starting.html) or *R Programming for Data Science* [here](https://bookdown.org/rdpeng/rprogdatascience/getting-started-with-r.html).
