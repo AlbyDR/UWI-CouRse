@@ -107,14 +107,18 @@ fct_unique(dwd.cloudiness$cloud_cover)
 # Cumulonimbus  9 CB
 # bei Instrumentenmessung -1 -1
 #'
-levels(dwd.cloudiness$cloud_cover) <- c(NA, "Cirrus", "Cirrocumulus", "Cirrostratus", "Altocumulus", 
+levels(dwd.cloudiness$cloud_cover) <- c("No_clouds", "Cirrus", "Cirrocumulus", "Cirrostratus", "Altocumulus", 
                                         "Altostratus","Nimbostratus","Stratocumulus","Stratus", "Cumulus",
                                         "Cumulonimbus")
 fct_count(dwd.cloudiness$cloud_cover)
 #'
 #' **convert NA in NA level
+dwd.cloudiness$cloud_cover <- fct_collapse(dwd.cloudiness$cloud_cover,
+                                     "NA" = c("InstrumentM", NA))
+
 dwd.cloudiness$cloud_cover <- fct_explicit_na(dwd.cloudiness$cloud_cover, na_level = "NA")
 fct_count(dwd.cloudiness$cloud_cover)
+summary(dwd.cloudiness$cloud_cover)
 #'
 
 #' If you try to join the two dataset by assign the variable to the other,
@@ -176,8 +180,10 @@ DWD_data
 #'1. create a variable `DWD_data$day_night <- DWD_data$sunlight_times` and 
 #' reclassify to day or night only using `fct_collapse()`;
 #'1. are the factors sunlight_times and day_night nominal or ordinal?;
-#'1. save DWD_data to binary (.rds) instead of text file (.csv) using `read_rds("DWD_data.rds")`.
+#'1. save DWD_data to binary (.rds) instead of text file (.csv) using `write_rds("DWD_data.rds")`.
 #'
 #'*suggestion:* check the function help `??read_csv()`, `??as_factor()` and 
 #' `??fct_collapse()` if you are in doubt how to use it.
-
+#' 
+#'
+#'write_rds(DWD_data, file = "C:/Users/Alby Rocha/Documents/UWI/UWI-CouRse/2_Data_science/DWD_prec_data.rds")
