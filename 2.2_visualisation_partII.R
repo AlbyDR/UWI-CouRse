@@ -351,33 +351,36 @@ ggplot(filter(DWD_temperature,year(timestamp)==1910)) +
         panel.grid.minor = element_line(colour="white"),
         plot.title = element_text(size=9, vjust=-1,hjust=0))
 #' 
+#' 
 #' Uncertainty plot
 DWD_temperature %>%
-  group_by(year = year(timestamp)) %>%
-  summarise(min = min(air_temp, na.rm=T),
-            lower = (mean(air_temp, na.rm=T) - qnorm(0.975)) * sd(air_temp, na.rm=T)/sqrt(length(air_temp)),
+  filter(year(timestamp) == 2020 & hour(timestamp)== 6) %>%
+  group_by(month = month(timestamp, label = TRUE)) %>%
+  summarise(n = length(month),
+    min = min(air_temp, na.rm=T),
+            lower = qnorm(0.995)*(sd(air_temp, na.rm=T)/sqrt(length(month))),
             mean = mean(air_temp, na.rm=T),
-            upper = (mean(air_temp, na.rm=T) + qnorm(0.975)) * sd(air_temp, na.rm=T)/sqrt(length(air_temp)),
+            upper = qnorm(0.995)*(sd(air_temp, na.rm=T)/sqrt(length(air_temp))),
             max = max(air_temp, na.rm=T)) %>%
   #print(n=10) 
-  ggplot(aes(x = factor(year), y = mean)) +
+  ggplot(aes(x = factor(month), y = mean)) +
   geom_line(aes(group = 1), linetype="dashed", size=0.5, color="grey45") +
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = mean - lower, ymax = mean + upper), 
   width = .1) +
-  scale_x_discrete(name = "year", breaks = c(seq(1890,2020,5)))+
-  scale_y_continuous(limits=c(5, 15), breaks=c(5:15)) +
+  #scale_x_discrete(name = "year", breaks = c(seq(1900,2020,5)))+
+  #scale_y_continuous(limits=c(5, 15), breaks=c(5:15)) +
   labs(title = '', x = 'year', y = 'air temperature (average)') +
   theme(axis.text.x = element_text(color="grey25", size=8, angle=90))
 #' 
-#' or shade region
+#' or shade region (ci by hand)
 DWD_temperature %>%
   filter(year(timestamp) >= 1900) %>%
   group_by(year = year(timestamp)) %>%
   summarise(min = min(air_temp, na.rm = TRUE),
-            lower = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(nrow(air_temp))) ,
+            lower = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(length(air_temp))) ,
             mean = mean(air_temp, na.rm=T),
-            upper = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(nrow(air_temp))),
+            upper = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(length(air_temp))),
             max = max(air_temp, na.rm=T)) %>%
   #print(n=10) 
   ggplot(aes(x = year, y = mean)) +
@@ -416,4 +419,26 @@ hcl_palettes("diverging", plot = TRUE)
 divergingx_palettes(n = 10, plot = TRUE)
 divergingx_hcl(12, palette = "RdBu")
 #` 
-#`
+#' Exercise: 
+#'1. run the below with and without the hour filter  
+#'1. what are the difference and why it happens
+#'
+DWD_temperature %>%
+  filter(year(timestamp) == 2020 & hour(timestamp)== 6) %>%
+  group_by(month = month(timestamp, label = TRUE)) %>%
+  summarise(n = length(month),
+            min = min(air_temp, na.rm=T),
+            lower = qnorm(0.995)*(sd(air_temp, na.rm=T)/sqrt(length(month))),
+            mean = mean(air_temp, na.rm=T),
+            upper = qnorm(0.995)*(sd(air_temp, na.rm=T)/sqrt(length(air_temp))),
+            max = max(air_temp, na.rm=T)) %>%
+  #print(n=10) 
+  ggplot(aes(x = factor(month), y = mean)) +
+  geom_line(aes(group = 1), linetype="dashed", size=0.5, color="grey45") +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = mean - lower, ymax = mean + upper), 
+                width = .1) +
+  #scale_x_discrete(name = "year", breaks = c(seq(1900,2020,5)))+
+  #scale_y_continuous(limits=c(5, 15), breaks=c(5:15)) +
+  labs(title = '', x = 'year', y = 'air temperature (average)') +
+  theme(axis.text.x = element_text(color="grey25", size=8, angle=90))
