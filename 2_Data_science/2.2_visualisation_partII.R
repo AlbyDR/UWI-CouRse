@@ -21,13 +21,14 @@ library(colorspace)  })  # colours
 #'
 DWD_temperature <- read_rds("DWD_temperature.rds")
 DWD_precipitation <- read_rds("DWD_precipitation.rds")
+#'
 #'### Plotting continuous variables
 #'
 #' The visualization of continuous variables present many different 
 #' approaches to show distribution, variation in time, space, 
 #' and within factors, relationship and uncertainty.
 #' 
-#' **One variable plot - distribution **  
+#'**One variable plot - distribution**  
 #' 
 #' classical histogram `geom_histogram()` or `geom_freqpoly()`
 ggplot(DWD_temperature) +
@@ -36,6 +37,7 @@ ggplot(DWD_temperature) +
   geom_vline(xintercept=0, colour = "red", linetype = "dashed") #annotation
 #'
 #' **continuous vs factor** 
+#' 
 #' How to compare different histogram
 DWD_temperature %>%
 mutate(quarters = factor(quarter(timestamp, fiscal_start = 1))) %>%
