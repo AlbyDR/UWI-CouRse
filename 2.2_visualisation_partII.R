@@ -375,9 +375,9 @@ DWD_temperature %>%
   filter(year(timestamp) >= 1900) %>%
   group_by(year = year(timestamp)) %>%
   summarise(min = min(air_temp, na.rm = TRUE),
-            lower = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(length(air_temp))) ,
+            lower = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(nrow(air_temp))) ,
             mean = mean(air_temp, na.rm=T),
-            upper = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(length(air_temp))),
+            upper = qnorm(0.975) * (sd(air_temp, na.rm=T) / sqrt(nrow(air_temp))),
             max = max(air_temp, na.rm=T)) %>%
   #print(n=10) 
   ggplot(aes(x = year, y = mean)) +

@@ -9,10 +9,10 @@
 #'## Example 2.2:Visualization - 
 #'### Part I: discrete or categorical data
 #'
-#'
+suppressPackageStartupMessages({
 library(tidyverse)
 library(lubridate)
-library(kableExtra)
+library(kableExtra) })
 #'
 DWD_prec_data <- read_rds("DWD_prec_data.rds")
 #'
