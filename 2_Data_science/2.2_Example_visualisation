@@ -1,0 +1,8 @@
+#'---
+#'title: "Statistics Course - UWI"
+#'author: "AlbyDR"
+#'date: "`r format(Sys.Date())`"
+#'output: github_document
+#'---
+#'
+#'## Example 2.2 Visualisation

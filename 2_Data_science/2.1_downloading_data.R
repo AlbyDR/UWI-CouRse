@@ -7,12 +7,11 @@
 #'  github_document
 #'---
 #' 
-library(tidyverse)
+#' 
 suppressPackageStartupMessages({
-library(readr)      #' read_table2,read_delim
+library(tidyverse)  #' arange, filter and join_left
 library(sp)         #' spDistsN1 function
 library(mapview)    #' mapview
-library(dplyr)      #' arange, filter and join_left
 library(lubridate)  #' ymd
 library(stringr)    #' str_split and str_extract_all
 library(webshot) })
@@ -45,7 +44,7 @@ unlink(temp)
 DWDstations$distTUB <- spDistsN1(pts=as.matrix(cbind(DWDstations$long, DWDstations$lat)),
                                  pt=c(13.327855,52.512283),longlat=TRUE)
 #'
-DWDstations <- filter(DWDstations, distTUB <= 30 & to_date >= "2021-01-01")
+DWDstations <- filter(DWDstations, distTUB <= 60 & to_date >= "2020-01-01")
 #' 
 #' Let see where they are
 sf_DWDstations <- SpatialPointsDataFrame(coords = as.matrix(DWDstations[,c('long','lat')]),
@@ -370,7 +369,7 @@ unlink(temp2)
 metadata2
 #' 
 #' Read recent data
-dwd.soil_temperature.recent <- read_delim(metadata2[8],
+dwd.soil_temperature.recent <- read_delim(metadata2[10],
                               ";", escape_double = FALSE, 
                               col_types = cols(MESS_DATUM = col_datetime(format="%Y%m%d%H")), 
                               trim_ws = TRUE)
@@ -582,7 +581,7 @@ unlink(temp2)
 metadata2
 #' 
 #' Read recent data
-dwd.cloud_type.recent <- read_delim(metadata2[16],
+dwd.cloud_type.recent <- read_delim(metadata2[20],
                               ";", escape_double = FALSE, 
                               col_types = cols(MESS_DATUM = col_datetime(format="%Y%m%d%H"),
                                                .default = col_character()), 
@@ -656,7 +655,7 @@ unlink(temp2)
 metadata2
 #' 
 #' Read recent data
-dwd.cloudiness.recent <- read_delim(metadata2[8],
+dwd.cloudiness.recent <- read_delim(metadata2[12],
                                    ";", escape_double = FALSE, 
                                    col_types = cols(MESS_DATUM = col_datetime(format="%Y%m%d%H")), 
                                    trim_ws = TRUE)
@@ -901,7 +900,7 @@ DWD_data <- left_join(DWD_data, dew_point[,c(2,4,5)], by="timestamp", type="left
 DWD_data <- left_join(DWD_data, soil_temperature[,c(2,4,5,6,7,8,9)], by="timestamp", type="left", match="first")
 DWD_data <- left_join(DWD_data, moisture[,c(2,4,5,6,7,8,9,10)], by="timestamp", type="left", match="first")
 DWD_data <- left_join(DWD_data, precipitation[,c(2,4,5)], by="timestamp", type="left", match="first")
-DWD_data <- left_join(DWD_data, cloud_type[,c(2,4,6,7,9,10,11,13,14,15,17,18,19,21)], by="timestamp", type="left", match="first")
+#DWD_data <- left_join(DWD_data, cloud_type[,c(2,4,6,7,9,10,11,13,14,15,17,18,19,21)], by="timestamp", type="left", match="first")
 DWD_data <- left_join(DWD_data, cloudiness[,c(2,5)], by="timestamp", type="left", match="first")
 DWD_data <- left_join(DWD_data, weather_phenomena[,c(2,4,5)], by="timestamp", type="left", match="first")
 #'
@@ -909,14 +908,6 @@ unique(diff((DWD_data$timestamp)))
 summary(DWD_data)
 
 type_convert(DWD_data)
-#'
-write_rds(DWD_data, file = "DWD_data.rds")
-#' DWD_data <- read_rds("DWD_data.rds")
-#'
-plot(x=DWD_data$timestamp, y=DWD_data$ws_Synop)
-DWD_dataset <- filter(DWD_data, year(timestamp)>=2000)
-summary(DWD_dataset)
-plot(x=DWD_dataset$timestamp, y=DWD_dataset$precip_mm)
 
 library(suncalc)
 ########################################################################
@@ -944,6 +935,29 @@ unique(night$sun)
 
 DWD_data$sunlight_times <- night$sun
 
+write_rds(DWD_data, file = "DWD_data.rds")
+#' DWD_data <- read_rds("DWD_data.rds")
+#' 
+#'
+plot(x=DWD_data$timestamp, y=DWD_data$ws_Synop)
+DWD_dataset <- filter(DWD_data, year(timestamp)>=1980)
+
+summary(DWD_dataset)
+
+write_rds(DWD_dataset, file = "DWD_dataset.rds")
+# DWD_dataset <- read_rds("DWD_dataset.rds")
+#' 
+
+DWD_temperature <- DWD_data[,c(1,2,3,38)]
+write_rds(DWD_temperature, file = "DWD_temperature.rds")
+
+DWD_precipitation <- DWD_data[,c("timestamp","precip_mm","precip_h",  
+                                 "cloud_cover", "rel_humidity","sunlight_times")]
+
+DWD_precipitation <- filter(DWD_precipitation, year(timestamp)>=1997)
+plot(y=DWD_precipitation$precip_mm, x=DWD_precipitation$timestamp)
+summary(DWD_precipitation)
+#'
 
 ##################################################
 # calculate the raining window
@@ -952,17 +966,17 @@ window.prec <- NULL
 
 for (i in 1:400) {
   window.prec[[i]] <- data.frame(
-    arrange(data.frame(row=unique(c(which(DWD_data$prec_hour==1)+i))),row),
+    arrange(data.frame(row=unique(c(which(DWD_precipitation$precip_h==1)+i))),row),
     hour=i )
   colnames(window.prec[[i]]) <- c("row",paste("hour",i, sep=""))
 }
 
 row_0 <- data.frame(
-  arrange(data.frame(row=unique(c(which(DWD_data$prec_hour==1)+0))),row),
+  arrange(data.frame(row=unique(c(which(DWD_precipitation$precip_h==1)+0))),row),
   "hour_0" = 0)
 
-row_timestamp <- data.frame(timestamp=DWD_data$timestamp)
-row_timestamp$row <- row_number(DWD_data$timestamp)
+row_timestamp <- data.frame(timestamp=DWD_precipitation$timestamp)
+row_timestamp$row <- row_number(DWD_precipitation$timestamp)
 row_timestamp <- left_join(row_timestamp, row_0, by="row")
 
 for (i in 1:400) {
@@ -975,14 +989,9 @@ for (i in 399:0) {
   row_timestamp$prec.window[row_timestamp[i+3]==i] <- i 
 }
 
-DWD_data$prec.window <- row_timestamp$prec.window
+DWD_precipitation$prec.window <- row_timestamp$prec.window
 
-
-
-library(lubridate)
-saveRDS(DWD_dataset, file = "DWD_dataset.Rds")
-DWD_dataset <- read_rds("DWD_data.rds")
-print(DWD_dataset, n = 5, width = Inf)
+# cloud type factor
 
 # Cirrus        0 CI
 # Cirrocumulus  1 CC
@@ -996,138 +1005,26 @@ print(DWD_dataset, n = 5, width = Inf)
 # Cumulonimbus  9 CB
 # bei Instrumentenmessung -1 -1
 
-class(DWD_dataset$Cloud.coverage.total)
-typeof(DWD_dataset$Cloud.coverage.total)
-attributes(DWD_dataset$Cloud.coverage.total)
-unclass(DWD_dataset$Cloud.coverage.total)
+class(DWD_precipitation$cloud_cover)
+typeof(DWD_precipitation$cloud_cover)
+attributes(DWD_precipitation$cloud_cover)
+#unclass(DWD_precipitation$cloud_cover)
 
-DWD_dataset$Cloud_coverage_fct <- as_factor(DWD_dataset$Cloud.coverage.total)
-class(DWD_dataset$Cloud_coverage_fct)
-typeof(DWD_dataset$Cloud_coverage_fct)
-attributes(DWD_dataset$Cloud_coverage_fct)
-unclass(DWD_dataset$Cloud_coverage_fct)
+DWD_precipitation$cloud_type <- as_factor(DWD_precipitation$cloud_cover)
+class(DWD_precipitation$cloud_type)
+typeof(DWD_precipitation$cloud_type)
+attributes(DWD_precipitation$cloud_type)
+#unclass(DWD_precipitation$cloud_type)
 
-DWD_dataset$Cloud_coverage_fct <- as_factor(as.numeric(DWD_dataset$Cloud.coverage.total))
-class(DWD_dataset$Cloud_coverage_fct)
-typeof(DWD_dataset$Cloud_coverage_fct)
-attributes(DWD_dataset$Cloud_coverage_fct)
-unclass(DWD_dataset$Cloud_coverage_fct)
+fct_unique(DWD_precipitation$cloud_type)
+fct_count(DWD_precipitation$cloud_type)
 
-levels(DWD_dataset$Cloud_coverage_fct)
-fct_count(DWD_dataset$Cloud_coverage_fct)
-fct_unique(DWD_dataset$Cloud_coverage_fct)
+levels(DWD_precipitation$cloud_type) <- c("by_instrument", "Cirrus", "Cirrocumulus", "Cirrostratus", 
+                                            "Altocumulus", "Altostratus","Nimbostratus","Stratocumulus",
+                                            "Stratus","Cumulus","Cumulonimbus")
+                                            
 
-levels(DWD_dataset$Cloud_coverage_fct) <- c("by_instrument", "Cirrus", "Cirrocumulus", "Cirrostratus", "Altocumulus",
-            "Altostratus","Nimbostratus","Stratocumulus","Stratus",
-                 "Cumulus","Cumulonimbus")
+saveRDS(DWD_precipitation, file = "DWD_precipitation.Rds")
+#DWD_precipitation <- read_rds("DWD_precipitationa.rds")
+print(DWD_precipitation, n = 5, width = Inf)
 
-fct_explicit_na(f1, na_level = "(Unknown)")
-#combine factors
-fct_collapse(mtcars$cyl, Other = c("4", "6"))
-# Example showing keep as argument
-fct_other(mtcars$cyl, keep = c("8"))
-# Example showing drop as argument
-fct_other(mtcars$cyl, drop = c("4", "6"))
-
-fct_unique(as_factor(DWD_dataset$Weather_changes_Text))
-
-library(tidyverse)
-class(DWD_dataset$precip_h)
-DWD_dataset$precip_h <- factor(DWD_dataset$precip_h, levels = c(0,1), labels=c("dry","rain_occur"))
-
-typeof(DWD_dataset$precip_h)
-attributes(DWD_dataset$precip_h)
-unclass(DWD_dataset$precip_h)
-
-attributes(DWD_dataset$precip_h)
-
-typeof(DWD_dataset)
-
-#fct_collapse() fct_recode() fct_lump()
-# gss_cat %>%
-#   mutate(df = fct_recode(df,
-#                               "Republican, strong"    = "Strong republican",
-#                               "Republican, weak"      = "Not str republican",
-#                               "Independent, near rep" = "Ind,near rep",
-#                               "Independent, near dem" = "Ind,near dem",
-#                               "Democrat, weak"        = "Not str democrat",
-#                               "Democrat, strong"      = "Strong democrat",
-#                               "Other"                 = "No answer",
-#                               "Other"                 = "Don't know",
-#                               "Other"                 = "Other party"
-#   )) %>%
-# 
-# gss_cat %>%
-#   mutate(df = fct_collapse(df,
-#                                 other = c("No answer", "Don't know", "Other party"),
-#                                 rep = c("Strong republican", "Not str republican"),
-#                                 ind = c("Ind,near rep", "Independent", "Ind,near dem"),
-#                                 dem = c("Not str democrat", "Strong democrat")
-#   )) %>%
-#   count(df)
-
-
-# gss_cat %>%
-#   mutate(relig = fct_lump(relig, n = 10)) %>%
-#   count(relig, sort = TRUE) %>%
-#   print(n = Inf)
-
-
-DWD_dataset$Weather_changes_Text
-
-DWD_dataset %>%
- mutate(Weather_changes_Text = forcats::fct_lump(Weather_changes_Text, n = 20)) %>%
- count(Weather_changes_Text, sort = TRUE) %>%
- print(n = Inf)
-
-library(ggplot2)
-ggplot() +
-  geom_bar() 
-
-summary(DWD_dataset)
-  
-  ggplot(DWD_dataset, aes(x=factor(`Cloud_cover `))) +
-  geom_bar()
-  
-  ggplot(DWD_dataset[,], aes(x = factor(`Cloud_cover `), y = air_temp)) +
-  geom_col()
-
-  ggplot(DWD_dataset, aes(x = `Cloud_cover `, y = air_temp)) +
-    geom_col()
-  
-  ggplot(DWD_dataset) +
-    geom_bar(aes(x = factor(precip_h)))
-  
-  ggplot(DWD_dataset) +
-    geom_col(aes(y = (precip_h),x = factor(`Cloud_cover `)))
-  
-  ggplot(DWD_dataset, aes(x = factor(precip_h), y = air_temp)) +
-    geom_col()
-  
-  ggplot(DWD_dataset, aes(y =factor(precip_h), x = air_temp)) +
-    geom_col()
-  
-  ggplot(DWD_dataset, aes(y =precip_h, x = air_temp)) +
-    geom_col()
-  
-  ggplot(DWD_dataset, aes(y = factor(precip_h), x = year(timestamp), fill = precip_h)) +
-    geom_col(position = "dodge")
-  
-    ggplot(DWD_dataset, aes(x = year(timestamp), y=air_temp, fill = factor(precip_h))) +
-    geom_col(position = "dodge")
-
-    
-    
-    ggplot(DWD_dataset, aes(x = factor(`Cloud_cover `), fill = factor(precip_h))) +
-      geom_bar(position = "dodge")
-    
-    ggplot(DWD_dataset, aes(x = factor(precip_h), fill = factor(`Cloud_cover `) )) +
-      geom_bar(position = "dodge")
-    
-    
-    ggplot(DWD_dataset, aes(x = Cloud_coverage_fct, fill = factor(precip_h))) +
-      geom_bar(position = "dodge")
-    
-    ggplot(DWD_dataset, aes(x = factor(precip_h), fill = factor(`Cloud_cover `) )) +
-      geom_bar(position = "dodge")
-  

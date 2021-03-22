@@ -52,7 +52,6 @@ summary(dwd_prec)
 #' **Convert -999.0000 and -999.0 to NA**
 dwd_prec <- na_if(dwd_prec, -999)
 #' 
-#' 
 #'  
 #'### DWD Cloudiness data set 
 #' **stundenwerte_TD_03987**
@@ -135,10 +134,10 @@ summary(dwd_prec$timestamp)
 #'
 #' The best solution is to use a join function `dplyr::left_join`
 #' select the variables that are relevant, for instance id (var1) is all the same
-DWD_data <- left_join(dwd_prec[,c(2,3,4,5)], dwd.cloudiness[,c(2,5)], by="timestamp", match="first")
-DWD_data
+DWD_prec_data <- left_join(dwd_prec[,c(2,3,4,5)], dwd.cloudiness[,c(2,5)], by="timestamp", match="first")
+DWD_prec_data
 #' Now works, but lets check the gaps in the timestamp 
-unique(diff((DWD_data$timestamp)))
+unique(diff((DWD_prec_data$timestamp)))
 #'
 #' Even better option is to create new timestamp for DWD data.frame or tibble df
 ts <- seq(as.POSIXct("1995-09-01 00:00:00", tz = "UTC"),
@@ -146,17 +145,17 @@ ts <- seq(as.POSIXct("1995-09-01 00:00:00", tz = "UTC"),
           by = "hour")
 #'
 #' Now, lets join again
-DWD_data <- tibble(timestamp=ts)
-DWD_data <- left_join(DWD_data, dwd_prec[,c(2,3,4,5)], by="timestamp", type="left", match="first")
-DWD_data <- left_join(DWD_data, dwd.cloudiness[,c(2,5)], by="timestamp", type="left", match="first")
+DWD_prec_data <- tibble(timestamp=ts)
+DWD_prec_data <- left_join(DWD_prec_data, dwd_prec[,c(2,3,4,5)], by="timestamp", type="left", match="first")
+DWD_prec_data <- left_join(DWD_prec_data, dwd.cloudiness[,c(2,5)], by="timestamp", type="left", match="first")
 #'
 #' lets check again the gaps in the timestamp 
-unique(diff((DWD_data$timestamp))) 
+unique(diff((DWD_prec_data$timestamp))) 
 #' No gaps
 #' 
-lubridate::tz(DWD_data$timestamp)
+lubridate::tz(DWD_prec_data$timestamp)
 #' 
-DWD_data
+DWD_prec_data
 #' **The data now looks tidy!**
 #'
 #'
@@ -170,20 +169,20 @@ DWD_data
 #'  
 #'  
 #' **Note:** *go to the appendix <2.1_downloading_data> if you want to see 
-#' the complete script to download all available hourly DWD_data* 
+#' the complete script to download all available hourly DWD_prec_data* 
 #'  
 #'### Exercise 2.1
-#'1. read the data [DWD_data.csv](https://github.com/AlbyDR/UWI-CouRse/tree/main/2_Data_science/DWD_data.csv) 
+#'1. read the data [DWD_prec_data.csv](https://github.com/AlbyDR/UWI-CouRse/tree/main/2_Data_science/DWD_prec_data.csv) 
 #' using the function `read_csv()`;
-#'1. check if the variable timestamp is assigned as datatime printing DWD_data;
-#'1. convert `DWD_data$sunlight_times` to a factor using `as_factor()`;
-#'1. create a variable `DWD_data$day_night <- DWD_data$sunlight_times` and 
+#'1. check if the variable timestamp is assigned as datatime printing DWD_prec_data;
+#'1. convert `DWD_prec_data$sunlight_times` to a factor using `as_factor()`;
+#'1. create a variable `DWD_prec_data$day_night <- DWD_prec_data$sunlight_times` and 
 #' reclassify to day or night only using `fct_collapse()`;
 #'1. are the factors sunlight_times and day_night nominal or ordinal?;
-#'1. save DWD_data to binary (.rds) instead of text file (.csv) using `write_rds("DWD_data.rds")`.
+#'1. save DWD_prec_data to binary (.rds) instead of text file (.csv) using `write_rds("DWD_prec_data.rds")`.
 #'
 #'*suggestion:* check the function help `??read_csv()`, `??as_factor()` and 
 #' `??fct_collapse()` if you are in doubt how to use it.
 #' 
 #'
-#'write_rds(DWD_data, file = "C:/Users/Alby Rocha/Documents/UWI/UWI-CouRse/2_Data_science/DWD_prec_data.rds")
+#'write_rds(DWD_prec_data, file = "C:/Users/Alby Rocha/Documents/UWI/UWI-CouRse/2_Data_science/DWD_prec_data.rds")
