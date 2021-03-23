@@ -97,7 +97,8 @@ stby(DWD_precipitation[,c(2,5,8)], DWD_precipitation$precip_h, descr, stats = "f
 #view(dfSummary(DWD_temperature))
 #'
 # for markdown
-print(dfSummary(DWD_precipitation[,-4], graph.magnif = 0.75), method = 'render')
+print(dfSummary(DWD_precipitation[,-4], graph.magnif = 0.75), method = 'render', 
+      valid.col = FALSE, tmp.img.dir = "/tmp")
 #'
 #' join air_temp to the precipitation df
 DWD_precipitation <- left_join(DWD_precipitation, DWD_temperature[,1:2], by = "timestamp" )

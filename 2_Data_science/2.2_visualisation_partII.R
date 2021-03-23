@@ -119,7 +119,7 @@ DWD_temperature %>%
   group_by(year=year) %>%
   summarise(mean_temp = mean(air_temp, na.rm = TRUE),
             max_temp = max(air_temp, na.rm = TRUE),
-            min_temp = min(air_temp, na.rm = TRUE))%>%
+            min_temp = min(air_temp, na.rm = TRUE)) %>%
   #print(n=Inf) 
   ggplot()+
   geom_line(aes(y = mean_temp, x = year), col = "blue") +
@@ -266,7 +266,7 @@ DWD_temperature %>%
                                   "Dusk" = "grey" ))+
   labs(y='air temperature [ºC]',  x='relative humidity [%]') +
   annotate("text", x = 95, y = 33, 
-           label = "italic(R) ^ 2 == 0.52", parse = TRUE, size = 4) +
+           label = "italic(R) ^ 2 == 0.57", parse = TRUE, size = 4) +
   theme_bw() )
 #' If you plot without the scale_color_manual the sunlight_times 
 #' will be in alphabetic order, but they have a chronological order
