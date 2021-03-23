@@ -193,7 +193,7 @@ DWD_precipitation %>%
 #'
 DWD_precipitation %>%
   mutate(prec_hour = as_factor(precip_h) %>% 
-           fct_recode(sunny = "0", raining = "1")) %>%
+           fct_recode(dry = "0", raining = "1")) %>%
   #print(n=10)
   ggplot(aes(x = factor(cloud_type), fill = factor(prec_hour))) +
   geom_bar(position = "dodge")+
@@ -201,7 +201,7 @@ DWD_precipitation %>%
 #' 
 DWD_precipitation %>%
   mutate(prec_hour = as_factor(precip_h) %>% 
-           fct_recode(sunny = "0", raining = "1")) %>%
+           fct_recode(dry = "0", raining = "1")) %>%
   ggplot(aes(x = prec_hour, fill = cloud_type)) +
   geom_bar(position = "dodge")
 #' 
