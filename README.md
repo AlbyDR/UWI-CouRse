@@ -49,14 +49,6 @@ their choice with the instructors’ support.
     classical or Bayesian*
   - Data modelling: *general assumptions, model selection and accuracy*
 
-**Modelling climate events and time-series data**
-
-  - Time-series data: *working with dates and time in R*
-  - Extreme Values Analysis: *changes and intensity of extreme (or rare)
-    events*
-  - Time-series modelling: *dealing with seasonality and trends to
-    forecast with ARIMA models*
-
 **Regression models**
 
   - Generalized Additive Model (GAM): *smoothing your issues, study case
@@ -65,6 +57,14 @@ their choice with the instructors’ support.
     complexity*
   - Support Vector Machine (SVM): *tuning cost and epsilon, study case
     application*
+    
+**Modelling climate events and time-series data**
+
+  - Time-series data: *working with dates and time in R*
+  - Extreme Values Analysis: *changes and intensity of extreme (or rare)
+    events*
+  - Time-series modelling: *dealing with seasonality and trends to
+    forecast with ARIMA models*
 
 **Other statistical methods**
 
