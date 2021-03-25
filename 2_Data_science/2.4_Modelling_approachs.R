@@ -51,9 +51,9 @@ DWD_precipitation %>%
   scale_colour_manual(name = "precip_h" ,values = c("blue","brown")) +
   ggtitle("Air Temperature vs Relative Humidity") +
   labs(y='air temperature [ºC]',  x='relative humidity [%]') +
-  annotate("text", x = 90, y = 33, colour = "brown", size = 7,
+  annotate("text", x = 80, y = 33, colour = "brown", size = 6,
            label = "italic(r) [raining] == -0.69", parse = TRUE) +
-  annotate("text", x = 90, y = 36, colour = "blue", size = 7,
+  annotate("text", x = 80, y = 36, colour = "blue", size = 6,
            label = "italic(r) [dry] == -0.86", parse = TRUE) +
   theme()
 #'

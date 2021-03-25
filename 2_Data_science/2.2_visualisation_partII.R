@@ -228,7 +228,7 @@ DWD_temperature %>%
   labs(y='air temperature [ºC]',  x='relative humidity [%]') +
   theme()
 #' 
-#'  +
+#'
 DWD_temperature %>%
   filter(year(timestamp)>=2020 | year(timestamp)==1920) %>%
 ggplot(aes(x = RH, y = air_temp, colour = factor(year(timestamp)))) + 

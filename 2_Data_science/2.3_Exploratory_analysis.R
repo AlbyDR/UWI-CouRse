@@ -16,7 +16,6 @@ library(kableExtra)
 library(magrittr)
 library(corrr)
 library(GGally)
-library(lubridate)
 library(minerva)
 library(colorspace) })
 #'
@@ -102,6 +101,7 @@ print(dfSummary(DWD_precipitation[,-4], graph.magnif = 0.75), method = 'render',
 #'
 #' join air_temp to the precipitation df
 DWD_precipitation <- left_join(DWD_precipitation, DWD_temperature[,1:2], by = "timestamp" )
+#write_rds(DWD_precipitation, file = "DWD_precipitation.rds")
 #'
 #' Lets check the statistics
 descr(DWD_precipitation[,c(2,3,5,7,9)], stats = "all")
