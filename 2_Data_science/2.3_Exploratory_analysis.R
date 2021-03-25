@@ -159,7 +159,7 @@ DWD_precipitation %>%
 #' 
 #' Lets leave this discussion to extreme events analysis
 #'
-#' There is only outlyiers
+#' There is only outliers
 DWD_precipitation %>%
   filter(year(timestamp)==1999 | year(timestamp)==2019) %>%
   ggplot() +
@@ -192,9 +192,10 @@ ggplot(DWD_precipitation, aes(sample = precip_mm)) +
   stat_qq() + stat_qq_line()
 #'
 #'
+#'Correlation
 DWD_precipitation %>%
   select_if(is.numeric) %>%
-correlate( use = "pairwise.complete.obs", quiet = TRUE) 
+correlate(use = "pairwise.complete.obs", quiet = TRUE) 
 #'
 #'
 DWD_precipitation %>%
@@ -223,14 +224,14 @@ DWD_precipitation %>%
 #'
 #' Pearson’s correlation assumes the variables to be roughly normally distributed and
 #' it is not robust in the presence of outliers. Check the difference between Person and Spearman
-DWD_precipitation %>% 
+DWD_precipitation %>%
   summarise(r = cor(air_temp, rel_humidity, use = 'pairwise.complete.obs')) %>% pull(r)
 #' Spearman method ranq x and y so it is less impacted by outliers
-DWD_precipitation %>% 
+DWD_precipitation %>%
   summarise(r = cor(air_temp, rel_humidity, method = "spearman", use = 'pairwise.complete.obs')) %>% pull(r)
 #'There in not so difference here
 #'
-DWD_precipitation %>% 
+DWD_precipitation %>%
   summarise(r = cor(precip_mm, rel_humidity, use = 'pairwise.complete.obs')) %>% pull(r)
 #'
 DWD_precipitation %>% 
