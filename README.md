@@ -61,7 +61,7 @@ their choice with the instructors’ support.
 **Modelling climate events and time-series data**
 
   - Time-series data: *working with dates and time in R*
-  - Extreme Values Analysis: *changes and intensity of extreme (or rare)
+  - Extreme Values Analysis: *chances and intensity of extreme (or rare)
     events*
   - Time-series modelling: *dealing with seasonality and trends to
     forecast with ARIMA models*
