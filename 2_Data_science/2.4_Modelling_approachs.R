@@ -8,14 +8,13 @@
 #'
 #'## Example 2.4: Modelling 
 #'
-suppressPackageStartupMessages({
-  library(tidyverse)     
-  library(lubridate)
-  library(colorspace)
-  library(GGally)        
-  library(vip) 
-  library(tidymodels)
-})  
+packages_list2 <- c("tidyverse", "lubridate", "colorspace", "GGally", "vip", "tidymodels")
+
+new.packages <- packages_list2[!(packages_list2 %in% installed.packages()[,"Package"])]
+
+if(length(new.packages)) install.packages(new.packages)
+
+invisible(lapply(packages_list2, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 #'
 DWD_temperature <- read_rds("DWD_temperature.rds")
@@ -97,7 +96,8 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
 #'
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + precip_h + day_night, data = filter(DWD_precipitation, year(timestamp) >= 2020 & month(timestamp) == 8)) %>%
-  pluck("fit") %>% summary()
+  pluck("fit") %>% #glance()
+  summary()   
 #' It is like before, the drop of Rsquared (coefficient of explanation) is probably because at night has less
 #' variation to explain. 
 #'
@@ -178,4 +178,27 @@ DWD_precipitation %>%
 #' hierarchical 
 #' In this case **Multilevel or Hierarchical Model** is probably the best solution because its allow the 
 #' model to have a slope and/or an intercept for each model level (month in this case), but keeping only one #' model.
+#' 
+#' # Modeling approaches
+#' 
+#' **warning** notice that time is not consider in the explicit in the model, and if you repeat 
+#' this same model using the timestamp by year, month or day, you may find a complete 
+#' different relationship.
+#' 
+#' Despite time is a continuous variable, a timestamp is date-time index and not a random variables,
+#' therefore I prefer consider time and space as a domain, rather a variable. 
+#' Time would be a random variable if you consider the interval of time until a event occur,
+#' for instance, the duration of a rainfall or of each phase of the phrenology of a species of plant.
+#' 
+#' As you often aggregate (discretization) time and space in intervals (hour/day/year or pixel/plot/region), and
+#' we saw, for instance, that air temperature has seasonality (day and months) and trend (getting warm), 
+#' the aggregation can change complete the interpretation. Also the way that you aggregate, for instance,
+#' temperature and RH you may average, but precipitation you may sum or average.
+#' 
+#' Most of the regression do not 
+#' handle well data that are temporal or spatial dependent as violet the 
+#' assumption of independent and identical distributed (i.i.d) observations.
+#' We will se an example later in the course.
+#' 
+#' 
 #' 
