@@ -5,7 +5,7 @@
 #'always_allow_html: true
 #'output: github_document
 #'---
-
+#'
 #'## Example 3.3:Inference and Modeling - 
 #'
 #'
@@ -15,6 +15,9 @@ packages_list3.3 <- c("tidyverse", "lubridate", "GGally", "summarytools", "tidym
 #'
 new.packages <- packages_list3.3[!(packages_list3.3 %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list2[(packages_list2 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
 #'
 invisible(lapply(packages_list3.3, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
@@ -90,6 +93,70 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% glance()
+#' 
+#' Residual analysis
+set.seed(123)
+linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
+  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
+      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) -> lm_fit
+
+ggplot(mapping = aes(x = lm_fit$fit$fitted.values, y = lm_fit$fit$model$rel_humidity)) +
+  geom_point(color = '#006EA1') +
+  geom_abline(intercept = 0, slope = 1, color = 'orange') +
+  labs(title = 'Linear Regression Results - rel_humidity train Set',
+       x = 'Predicted rel_humidity',
+       y = 'Observed rel_humidity')
+
+set.seed(123)
+new_data <- sample_n(filter(DWD_precipitation, year(timestamp) >= 2019), 100)
+
+test_pred <- predict(lm_fit, new_data = new_data) %>% 
+  bind_cols(new_data)
+
+ggplot(data = test_pred,
+       mapping = aes(x = .pred, y = rel_humidity)) +
+  geom_point(color = '#006EA1') +
+  geom_abline(intercept = 0, slope = 1, color = 'orange') +
+  labs(title = 'Linear Regression Results - rel_humidity Test Set',
+       x = 'Predicted rel_humidity',
+       y = 'Observed rel_humidity')
+#'
+par(mfrow=c(2,2)) # plot all 4 plots in one
+#'
+plot(lm_fit$fit, 
+     pch = 16,    
+     col = '#006EA1')
+
+linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
+  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
+      data = filter(DWD_precipitation, year(timestamp) >= 2020 & month(timestamp) == 6)) %>%
+  pluck("fit") -> lm_fit
+
+par(mfrow=c(2,2)) # plot all 4 plots in one
+#'
+plot(lm_fit, 
+     pch = 16,    
+     col = '#006EA1')
+
+set.seed(123)
+linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
+  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
+      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
+  pluck("fit") -> lm_fit
+
+#' normality test
+shapiro.test(lm_fit$residuals)
+#' Autocorrelation
+dwtest(lm_fit)
+Box.test(lm_fit$residuals, type = "Ljung-Box")
+#' Heterocedasticity
+library(lmtest)
+bptest(lm_fit)
+#'Multicollinearity
+library(car)
+vif(lm_fit)
+#' VIF value that exceeds 5 or 10 indicates a problematic amount of collinearity.
+#' 
 #' 
 set.seed(123)
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
@@ -188,6 +255,7 @@ DWD_precipitation %>%
   labs(x = "air temperature", y = "relative humidity", color = "precipitation") +
   geom_parallel_slopes(se = FALSE)
 #' without interaction the slopes are parallel
+#' 
 #' 
 #' 
 #' **Bayesian Framework**
