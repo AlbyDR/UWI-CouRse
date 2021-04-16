@@ -72,7 +72,6 @@ pextRemes(Bayesian_mm, c(32, 34, 36, 38, 40), lower.tail = FALSE)
 #'
 mrlplot(bmPrec$precip_mm)
 #'
-#'
 # PEACKS OVER THRESHOLD APPROACH
 # Data set of daily rainfall data
 #'
