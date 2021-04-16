@@ -8,22 +8,20 @@
 #'
 #'## Example 2.4: Modelling 
 #'
-packages_list2 <- c("tidyverse", "lubridate", "colorspace", "GGally", "vip", "tidymodels")
-
-new.packages <- packages_list2[!(packages_list2 %in% installed.packages()[,"Package"])]
-
-if(length(new.packages)) install.packages(new.packages)
-
-update.packages <- packages_list2[(packages_list2 %in% old.packages()[,"Package"])]
-
-if(length(update.packages)) install.packages(update.packages)
-
-invisible(lapply(packages_list2, library, character.only = T, quietly = TRUE, warn.conflicts = F))
+packages_list2.4 <- c("tidyverse", "lubridate", "colorspace", "GGally", "vip", "tidymodels")
+#'
+#' new.packages <- packages_list2.4[!(packages_list2.4 %in% installed.packages()[,"Package"])]
+#' if(length(new.packages)) install.packages(new.packages)
+#' #'
+#' update.packages <- packages_list2.4[(packages_list2.4 %in% old.packages()[,"Package"])]
+#' if(length(update.packages)) install.packages(update.packages)
+#'
+invisible(lapply(packages_list2.4, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 #'
 DWD_temperature <- read_rds("DWD_temperature.rds")
 DWD_precipitation <- read_rds("DWD_precipitation.rds")
-
+#'
 #DWD_precipitation$day_night <- if_else(DWD_precipitation$sunlight_times == "Night", 0, 1)
 #'
 #' correlation 
