@@ -11,7 +11,7 @@
 packages_list4 <- c("xts", "water","tidyverse", "lubridate", "vip", "summarytools", "tidymodels",
                       "moderndive", "vip", "kableExtra", "bayesplot", "bayestestR", "plsmod",
                       "rstanarm", "mixOmics", "modelbased", "performance", "see", "randomForest",
-                      "MASS", "corrr", "car")
+                      "MASS", "corrr", "car", "e1071")
 #'
 new.packages <- packages_list4[!(packages_list4 %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)

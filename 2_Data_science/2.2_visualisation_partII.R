@@ -8,16 +8,16 @@
 #'
 #'## Example 2.2:Visualization - 
 #'### Part II: continuous data
-suppressPackageStartupMessages({
-library(tidyverse)     # ggplot, readr and dplyr packages
-library(lubridate)     # date-time
-library(scales)        # label percentage 
-library(tidyquant)     # coord_x_date
-library(cowplot)
-library(gridExtra)
-library(RColorBrewer)  # colours
-library(colorspace)  })  # colours
-#library(Hmisc)
+packages_list2.2 <- c("tidyverse", "lubridate", "kableExtra", "scales", "tidyquant", "cowplot",
+                       "gridExtra", "RColorBrewer", "colorspace")
+#
+new.packages <- packages_list2.2[!(packages_list2.2 %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list2.2[(packages_list2.2 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
+#' 
+invisible(lapply(packages_list2.2, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 DWD_temperature <- read_rds("DWD_temperature.rds")
 DWD_precipitation <- read_rds("DWD_precipitation.rds")

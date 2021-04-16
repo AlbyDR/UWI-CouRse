@@ -7,9 +7,15 @@
 #'
 #'## Example 2.1 Tidy Data
 #' 
-library(tidyverse)
-library(lubridate)
+packages_list2.1 <- c("tidyverse", "lubridate")
+#
+new.packages <- packages_list2.1[!(packages_list2.1 %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
 #' 
+update.packages <- packages_list2.1[(packages_list2.1 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
+#' 
+invisible(lapply(packages_list2.1, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #' 
 #'### DWD precipitation dataset (prec) 
 #' 
@@ -156,6 +162,7 @@ unique(diff((DWD_prec_data$timestamp)))
 lubridate::tz(DWD_prec_data$timestamp)
 #' 
 DWD_prec_data
+#'
 #' **The data now looks tidy!**
 #'
 #'
@@ -165,7 +172,6 @@ DWD_prec_data
 #'* how manipulation data and use logical operator such as filter and join (`dplyr`)
 #'* convert to missing values (NA) (`basic, forcats`)
 #'* check the timezone (`lubridate`)
-#'  
 #'  
 #'  
 #' **Note:** *go to the appendix <2.1_downloading_data> if you want to see 

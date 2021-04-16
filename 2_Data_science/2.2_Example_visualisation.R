@@ -9,10 +9,15 @@
 #'## Example 2.2:Visualization - 
 #'### Part I: discrete or categorical data
 #'
-suppressPackageStartupMessages({
-library(tidyverse)
-library(lubridate)
-library(kableExtra) })
+packages_list2.2 <- c("tidyverse", "lubridate", "kableExtra")
+#
+new.packages <- packages_list2.2[!(packages_list2.2 %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list2.2[(packages_list2.2 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
+#' 
+invisible(lapply(packages_list2.2, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 DWD_precipitation <- read_rds("DWD_precipitation.rds")
 #'

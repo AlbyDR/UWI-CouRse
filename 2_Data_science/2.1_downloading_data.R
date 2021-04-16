@@ -7,14 +7,15 @@
 #'  github_document
 #'---
 #' 
-#' 
-suppressPackageStartupMessages({
-library(tidyverse)  #' arange, filter and join_left
-library(sp)         #' spDistsN1 function
-library(mapview)    #' mapview
-library(lubridate)  #' ymd
-library(stringr)    #' str_split and str_extract_all
-library(webshot) })
+packages_list2d <- c("tidyverse", "lubridate", "sp", "mapview", "webshot", "suncalc")
+#'
+new.packages <- packages_list2d[!(packages_list2d %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list2d[(packages_list2d %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
+#'
+invisible(lapply(packages_list2d, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 #' All DWD stations locations
 #'
@@ -85,7 +86,7 @@ zipfile2 <- readLines(download.url2)
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TU_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
-download.file(paste0(download.url2,zipfile2),temp2, mode="wb")
+download.file(paste0(download.url2, zipfile2), temp2, mode="wb")
 metadata2 <- unzip(temp2)
 unlink(temp2)
 metadata2 
@@ -884,7 +885,6 @@ ts <- seq(as.POSIXct("1893-01-01", tz = "UTC"),
           by = "hour") 
 head(ts)
 tail(ts)
-
 #'
 #'
 DWD_data <- tibble(timestamp=ts)
@@ -906,14 +906,13 @@ DWD_data <- left_join(DWD_data, weather_phenomena[,c(2,4,5)], by="timestamp", ty
 #'
 unique(diff((DWD_data$timestamp)))
 summary(DWD_data)
-
+#'
 type_convert(DWD_data)
-
-library(suncalc)
+#'
 ########################################################################
 night <- getSunlightTimes(date=date(DWD_data$timestamp), 
                           lat=52.45711, lon=13.31592, tz = "UTC")
-
+#'
 night$time <- DWD_data$timestamp
 night$sun <- NULL
 night$sun[night$time>night$nadir] <- "Night" ##seting
@@ -930,69 +929,67 @@ night$sun[night$time>night$goldenHour & night$time<night$sunset] <- "Goldenhour_
 night$sun[night$time>night$sunset & night$time<night$dusk] <- "Dusk"        #Even.Civil.ECsun
 night$sun[night$time>night$dusk & night$time<night$nauticalDusk] <- "Dusk"  #Even.Nau.ECsun
 night$sun[night$time>night$nauticalDusk & night$time<night$night] <- "Dusk" #Even.Astr.ECsun
-
+#'
 unique(night$sun)
-
+#'
 DWD_data$sunlight_times <- night$sun
-
+#'
 write_rds(DWD_data, file = "DWD_data.rds")
 #' DWD_data <- read_rds("DWD_data.rds")
 #' 
 #'
 plot(x=DWD_data$timestamp, y=DWD_data$ws_Synop)
 DWD_dataset <- filter(DWD_data, year(timestamp)>=1980)
-
+#'
 summary(DWD_dataset)
-
+#'
 write_rds(DWD_dataset, file = "DWD_dataset.rds")
 # DWD_dataset <- read_rds("DWD_dataset.rds")
 #' 
-
+#'
 DWD_temperature <- DWD_data[,c(1,2,3,38)]
 write_rds(DWD_temperature, file = "DWD_temperature.rds")
-
+#'
 DWD_precipitation <- DWD_data[,c("timestamp","precip_mm","precip_h",  
                                  "cloud_cover", "rel_humidity","sunlight_times")]
-
+#'
 DWD_precipitation <- filter(DWD_precipitation, year(timestamp)>=1997)
 plot(y=DWD_precipitation$precip_mm, x=DWD_precipitation$timestamp)
 summary(DWD_precipitation)
 #'
-
-##################################################
-# calculate the raining window
-##################################################
+#' calculate the raining window
+#'
 window.prec <- NULL
-
+#'
 for (i in 1:400) {
   window.prec[[i]] <- data.frame(
     arrange(data.frame(row=unique(c(which(DWD_precipitation$precip_h==1)+i))),row),
     hour=i )
   colnames(window.prec[[i]]) <- c("row",paste("hour",i, sep=""))
 }
-
+#'
 row_0 <- data.frame(
   arrange(data.frame(row=unique(c(which(DWD_precipitation$precip_h==1)+0))),row),
   "hour_0" = 0)
-
+#'
 row_timestamp <- data.frame(timestamp=DWD_precipitation$timestamp)
 row_timestamp$row <- row_number(DWD_precipitation$timestamp)
 row_timestamp <- left_join(row_timestamp, row_0, by="row")
-
+#'
 for (i in 1:400) {
   row_timestamp <- left_join(row_timestamp, window.prec[[i]], by="row")
 }
-
+#'
 row_timestamp$prec.window <- 400
-
+#'
 for (i in 399:0) {
   row_timestamp$prec.window[row_timestamp[i+3]==i] <- i 
 }
-
+#'
 DWD_precipitation$prec.window <- row_timestamp$prec.window
-
+#'
 # cloud type factor
-
+#'
 # Cirrus        0 CI
 # Cirrocumulus  1 CC
 # Cirrostratus  2 CS
@@ -1004,27 +1001,26 @@ DWD_precipitation$prec.window <- row_timestamp$prec.window
 # Cumulus       8 CU
 # Cumulonimbus  9 CB
 # bei Instrumentenmessung -1 -1
-
+#'
 class(DWD_precipitation$cloud_cover)
 typeof(DWD_precipitation$cloud_cover)
 attributes(DWD_precipitation$cloud_cover)
 #unclass(DWD_precipitation$cloud_cover)
-
+#'
 DWD_precipitation$cloud_type <- as_factor(DWD_precipitation$cloud_cover)
 class(DWD_precipitation$cloud_type)
 typeof(DWD_precipitation$cloud_type)
 attributes(DWD_precipitation$cloud_type)
 #unclass(DWD_precipitation$cloud_type)
-
+#'
 fct_unique(DWD_precipitation$cloud_type)
 fct_count(DWD_precipitation$cloud_type)
-
+#'
 levels(DWD_precipitation$cloud_type) <- c("by_instrument", "Cirrus", "Cirrocumulus", "Cirrostratus", 
                                             "Altocumulus", "Altostratus","Nimbostratus","Stratocumulus",
                                             "Stratus","Cumulus","Cumulonimbus")
-                                            
-
+#'
 saveRDS(DWD_precipitation, file = "DWD_precipitation.Rds")
 #DWD_precipitation <- read_rds("DWD_precipitationa.rds")
 print(DWD_precipitation, n = 5, width = Inf)
-
+#'

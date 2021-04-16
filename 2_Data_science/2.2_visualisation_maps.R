@@ -9,22 +9,18 @@
 #'## Example 2.2:Visualization - 
 #'### Part III: maps
 #'
-suppressPackageStartupMessages({
-library(raster)
-library(httr)
-library(sf)
-library(dplyr)
-library(fasterize)
-library(ggplot2)
-library(rasterVis)
-library(ggspatial)
-library(sp)
-library(sf)
-library(raster)
-library(RColorBrewer)
-library(geobuffer) }) # geobuffer_pts
+packages_list2m <- c("tidyverse", "raster", "httr", "sf", "fasterize", "rasterVis",
+                      "sp", "RColorBrewer", "geobuffer", "ggspatial")
+#
+new.packages <- packages_list2m[!(packages_list2m %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
 #'
-#' **Functions to import maps from the atla** 
+update.packages <- packages_list2m[(packages_list2m %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
+#' 
+invisible(lapply(packages_list2m, library, character.only = T, quietly = TRUE, warn.conflicts = F))
+#'
+#' **Functions to import maps from the atlas** 
 get_X_Y_coordinates <- function(x) {
   sftype <- as.character(sf::st_geometry_type(x, by_geometry = FALSE))
   if(sftype == "POINT") {
@@ -78,7 +74,7 @@ impervious_map <- sf_fisbroker("https://fbinter.stadt-berlin.de/fb/wfs/data/sens
 #'
 impervious_map <- impervious_map %>%
   mutate(RAUMID = stringr::str_sub(gml_id, 12, 19)) %>%
-  select(gml_id, RAUMID, everything()) %>%
+  dplyr::select(gml_id, RAUMID, everything()) %>%
   arrange(RAUMID)
 #'
 glimpse(impervious_map)
