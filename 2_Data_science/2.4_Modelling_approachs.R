@@ -10,11 +10,11 @@
 #'
 packages_list2.4 <- c("tidyverse", "lubridate", "colorspace", "GGally", "vip", "tidymodels")
 #'
-#' new.packages <- packages_list2.4[!(packages_list2.4 %in% installed.packages()[,"Package"])]
-#' if(length(new.packages)) install.packages(new.packages)
-#' #'
-#' update.packages <- packages_list2.4[(packages_list2.4 %in% old.packages()[,"Package"])]
-#' if(length(update.packages)) install.packages(update.packages)
+new.packages <- packages_list2.4[!(packages_list2.4 %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list2.4[(packages_list2.4 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
 #'
 invisible(lapply(packages_list2.4, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'

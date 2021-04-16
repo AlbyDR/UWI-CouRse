@@ -8,18 +8,18 @@
 #'
 #'## Example 2.3: Exploratory Data Analysis  
 #'
-suppressPackageStartupMessages({
-library(tidyverse)     # ggplot, readr and dplyr packages
-library(lubridate)     # date-time
-library(summarytools)
-library(kableExtra)
-library(magrittr)
-library(corrr)
-library(GGally)
-library(minerva)
-library(colorspace) })
+packages_list2.3 <- c("tidyverse", "lubridate", "kableExtra", "summarytools", "corrr", "GGally",
+                      "minerva", "magrittr", "colorspace")
 #'
-DWD_temperature <- read_rds("DWD_temperature.rds")
+#' new.packages <- packages_list2.3[!(packages_list2.3 %in% installed.packages()[,"Package"])]
+#' if(length(new.packages)) install.packages(new.packages)
+#' #'
+#' update.packages <- packages_list2.3[(packages_list2.3 %in% old.packages()[,"Package"])]
+#' if(length(update.packages)) install.packages(update.packages)
+#' 
+invisible(lapply(packages_list2.3, library, character.only = T, quietly = TRUE, warn.conflicts = F))
+#'
+#'
 DWD_precipitation <- read_rds("DWD_precipitation.rds")
 #'
 #' Tidy data and vector types <dbl> , <chr> and <fct>
@@ -40,32 +40,6 @@ ctable(DWD_precipitation$cloud_type, DWD_precipitation$precip_h, prop = "r")
 #'
 ggplot(DWD_precipitation) +
   geom_jitter(aes(y = cloud_type, x = precip_h))
-#'
-#'
-DWD_precipitation %>%
-  mutate(day_night = fct_collapse(sunlight_times, 
-                                  "Day" = unique(sunlight_times)[-1]),
-         prec_hour = as_factor(precip_h) %>% 
-           fct_recode(dry = "0", raining = "1")) %$%
-  #print(n=10)
-  ctable(prec_hour, day_night,  useNA = "no",
-         chisq = TRUE, OR = TRUE, RR = TRUE,
-         headings = FALSE) %>%
-   print() #method = "render"
-#' **don't trust!** There are name reasons to not trust this test, one of then is the number of sample,
-#' with 217687 observations the ci is to narrow as we see plotting uncertainty. Lets the other reasons 
-#' to the inference course
-#'
-# DWD_precipitation %>%
-#   filter(year(timestamp)==2020 & month(timestamp)==4) %>%
-#   mutate(day_night = fct_collapse(sunlight_times, 
-#                                   "Day" = unique(sunlight_times)[-1]),
-#          prec_hour = as_factor(precip_h) %>% 
-#            fct_recode(dry = "0", raining = "1")) %$%
-#   #print(n=10)
-#   ctable(day_night, prec_hour,   useNA = "no",
-#          chisq = TRUE, OR = TRUE, headings = FALSE) %>%
-#   print() #method = "render"
 #'
 #'
 #' While for quantitative variables (continuous and  discrete) we can run descriptive statistics
@@ -99,9 +73,6 @@ stby(DWD_precipitation[,c(2,5,8)], DWD_precipitation$precip_h, descr, stats = "f
 print(dfSummary(DWD_precipitation[,-4], graph.magnif = 0.75), method = 'render', 
       valid.col = FALSE, tmp.img.dir =  NA)
 #'
-#' join air_temp to the precipitation df
-DWD_precipitation <- left_join(DWD_precipitation, DWD_temperature[,1:2], by = "timestamp" )
-#write_rds(DWD_precipitation, file = "DWD_precipitation.rds")
 #'
 #' Lets check the statistics
 descr(DWD_precipitation[,c(2,3,5,7,9)], stats = "all")
@@ -122,12 +93,13 @@ descr(DWD_precipitation[,c(2,3,5,7,9)], stats = "all")
 DWD_precipitation %>%
   mutate(quarters = factor(quarter(timestamp, fiscal_start = 1))) %>%
   ggplot() +
-  geom_density(aes(air_temp, fill = quarters), 
+  geom_density(aes(air_temp, fill = quarters),
                alpha = 0.3, color = "white") +
   geom_vline(xintercept = 0, colour = "red", linetype = "dashed") +
-  scale_fill_discrete_qualitative(name = "Quarter", 
+  scale_fill_discrete_qualitative(name = "Quarter",
                                   palette = "Harmonic",# spacecolor package function
                                   labels = c("Jan-Mar", "Apr-Jun", "Jul-Sep", "Oct-Dec"))
+#'
 #' Try always to combine statistics with a plot
 #' 
 #' What about RH, is it symmetric?
@@ -185,7 +157,7 @@ DWD_precipitation %>%
 #' to present many zero records. While the RH is limited by zero (not in practical terms) and 100 with
 #' can also a problem, for instance a ci may contain a upper limit above 100.
 #'
-ggplot(DWD_precipitation, aes(sample = air_temp)) + 
+ggplot(DWD_precipitation, aes(sample = air_temp)) +
   stat_qq() + stat_qq_line()
 #'
 ggplot(DWD_precipitation, aes(sample = precip_mm)) + 
@@ -200,7 +172,7 @@ correlate(use = "pairwise.complete.obs", quiet = TRUE)
 #'
 DWD_precipitation %>%
   select_if(is.numeric) %>%
-  correlate( use = "pairwise.complete.obs", quiet = TRUE) %>% 
+  correlate( use = "pairwise.complete.obs", quiet = TRUE) %>%
   focus(air_temp)
 #'
 #'
@@ -218,7 +190,7 @@ DWD_precipitation %>%
 #'
 DWD_precipitation %>%
   filter(year(timestamp) >= 2020 & month(timestamp) == 4) %>%
-  mutate(day_night = fct_collapse(sunlight_times, 
+  mutate(day_night = fct_collapse(sunlight_times,
                                   "Day" = unique(sunlight_times)[-1])) %>%
   ggscatmat(columns = c("air_temp", "precip_mm", "rel_humidity"), color = "day_night", alpha = 0.8)
 #'
