@@ -11,13 +11,13 @@
 #'
 packages_list3.3 <- c("tidyverse", "lubridate", "GGally", "summarytools", "tidymodels",
                     "moderndive", "vip", "kableExtra", "bayesplot", "bayestestR", 
-                    "rstanarm", "insight", "modelbased", "performance", "see")
+                    "rstanarm", "insight", "modelbased", "performance", "see", "car", "lmtest")
 #'
-new.packages <- packages_list3.3[!(packages_list3.3 %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-#'
-update.packages <- packages_list2[(packages_list2 %in% old.packages()[,"Package"])]
-if(length(update.packages)) install.packages(update.packages)
+#' new.packages <- packages_list3.3[!(packages_list3.3 %in% installed.packages()[,"Package"])]
+#' if(length(new.packages)) install.packages(new.packages)
+#' #'
+#' update.packages <- packages_list3.3[(packages_list3.3 %in% old.packages()[,"Package"])]
+#' if(length(update.packages)) install.packages(update.packages)
 #'
 invisible(lapply(packages_list3.3, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
@@ -44,7 +44,6 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
 #' very narrow CI as the sample size is very big.
 #'
 #' many explanatory variables
-#' 
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ ., data = filter(DWD_precipitation, year(timestamp) >= 2020)) %>%
   pluck("fit") %>% summary()
@@ -56,63 +55,63 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   pluck("fit") %>% get_regression_table() %>% print(n = 24)
 #'
 #' what happens if we take a sample before modeling
-set.seed(123)
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ ., data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% summary()
 #' The Rsquare is simmilar but now many predictors are not significant at all
 #'
 #' lets check some metrics
-set.seed(123) 
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ ., data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% get_regression_summaries()
+#' 
 #' other metrics
-set.seed(123) 
+set.seed(123, sample.kind = "Rounding") 
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ ., data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% glance()
 #' many different statistics
 #'
 #' Lets check the importance of the predictors
-set.seed(123)
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ ., data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% vip()
 #' timestamp? this kind of variable should be not in the model
 #' 
-#' 
-set.seed(123)
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% summary()
 #' 
-set.seed(123)
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% glance()
 #' 
 #' Residual analysis
-set.seed(123)
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) -> lm_fit
-
+#'
 ggplot(mapping = aes(x = lm_fit$fit$fitted.values, y = lm_fit$fit$model$rel_humidity)) +
   geom_point(color = '#006EA1') +
   geom_abline(intercept = 0, slope = 1, color = 'orange') +
   labs(title = 'Linear Regression Results - rel_humidity train Set',
        x = 'Predicted rel_humidity',
        y = 'Observed rel_humidity')
-
-set.seed(123)
+#'
+set.seed(123, sample.kind = "Rounding")
 new_data <- sample_n(filter(DWD_precipitation, year(timestamp) >= 2019), 100)
-
+#' 
 test_pred <- predict(lm_fit, new_data = new_data) %>% 
   bind_cols(new_data)
-
+#' 
 ggplot(data = test_pred,
        mapping = aes(x = .pred, y = rel_humidity)) +
   geom_point(color = '#006EA1') +
@@ -123,83 +122,107 @@ ggplot(data = test_pred,
 #'
 par(mfrow=c(2,2)) # plot all 4 plots in one
 #'
-plot(lm_fit$fit, 
-     pch = 16,    
-     col = '#006EA1')
-
+plot(lm_fit$fit, pch = 16, col = '#006EA1')
+#' as the 100 sample is spread over the year the pattern are not clear
+#' 
+#' Autocorrelation
+lm_fit %>% pluck("fit") %>% durbinWatsonTest() %>% glance()
+#' or
+lm_fit %>% pluck("fit") %>% pluck("residuals") %>% Box.test(type = "Ljung-Box") %>% glance()
+#' apparently no temporal autocorrelation
+#'
+#' Multicollinearity
+lm_fit %>%  pluck("fit") %>% vif()
+#' apparently no Multicollinearity, 
+#' VIF values that exceeds 5 or 10 indicates a problematic amount of collinearity.
+#' 
+#' Heterocedasticity
+lm_fit %>%  pluck("fit") %>% bptest() %>% glance()
+#' we cannot also reject Heterocedasticity
+#'
+#' Normality test
+lm_fit %>% pluck("fit") %>% pluck("residuals") %>% shapiro.test() %>% glance()
+#' sound Normal
+#' 
+#' 
+#' What's happens If we take the data in a sequence
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
-  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
-      data = filter(DWD_precipitation, year(timestamp) >= 2020 & month(timestamp) == 6)) %>%
-  pluck("fit") -> lm_fit
-
+  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h, 
+      data = filter(DWD_precipitation, year(timestamp) >= 2020 & 
+                      month(timestamp) == 6 & hour(timestamp) == 12)) -> lm_fit_seq
+#' 
 par(mfrow=c(2,2)) # plot all 4 plots in one
 #'
-plot(lm_fit, 
-     pch = 16,    
-     col = '#006EA1')
-
-set.seed(123)
-linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
-  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
-      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
-  pluck("fit") -> lm_fit
-
-#' normality test
-shapiro.test(lm_fit$residuals)
+lm_fit_seq %>% pluck("fit") %>% plot(pch = 16, col = '#006EA1')
 #' Autocorrelation
-dwtest(lm_fit)
-Box.test(lm_fit$residuals, type = "Ljung-Box")
+lm_fit_seq %>% pluck("fit") %>% durbinWatsonTest() %>% glance()
+#' or
+lm_fit_seq %>% pluck("fit") %>% pluck("residuals") %>% Box.test(type = "Ljung-Box") %>% glance()
+#' temporal autocorrelation just pop-out
+#'
 #' Heterocedasticity
-library(lmtest)
-bptest(lm_fit)
-#'Multicollinearity
-library(car)
-vif(lm_fit)
-#' VIF value that exceeds 5 or 10 indicates a problematic amount of collinearity.
+lm_fit_seq %>%  pluck("fit") %>% bptest() %>% glance()
+#' Now we should reject Heterocedasticity
+#'
+#' Normality test
+lm_fit_seq %>% pluck("fit") %>% pluck("residuals") %>% shapiro.test() %>% glance()
+#' even Normality is rejected
 #' 
-#' 
-set.seed(123)
+#' Lets check sample size effect
+lm_fit %>% pluck("fit") %>% glance()
+#'
+new_data %>%
+  dplyr::select(rel_humidity) %>%
+  bind_cols(predict(lm_fit, new_data = new_data)) %>% metrics(truth = rel_humidity, estimate = .pred)
+#'
+#' n=30
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
-      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 30)) %>%
-  pluck("fit") %>% glance()
+      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 30)) -> lm_fit30
+#'
+lm_fit30 %>%  pluck("fit") %>% glance()
+#' r.squared much bigger, but the error sigma is higher
 #' 
+new_data30 <- sample_n(filter(DWD_precipitation, year(timestamp) >= 2019), 30) 
 #' 
-set.seed(123)
+new_data30 %>%
+  dplyr::select(rel_humidity) %>%
+  bind_cols(predict(lm_fit30, new_data = new_data30)) %>% metrics(truth = rel_humidity, estimate = .pred)
+#' The difference between accuracy in the training and testing set is huge
+#' 
+set.seed(123, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
-      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 500)) %>%
-  pluck("fit") %>% glance()
+      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 1000)) -> lm_fit1000
+#'
+lm_fit1000 %>%  pluck("fit") %>% glance()
+#' r.squared much bigger, but the error sigma is higher
 #' 
-#'
-set.seed(123)
-linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
-  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
-      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 1000)) %>%
-  pluck("fit") %>% glance()
+new_data1000 <- sample_n(filter(DWD_precipitation, year(timestamp) >= 2019), 1000) 
 #' 
+new_data1000 %>%
+  dplyr::select(rel_humidity) %>%
+  bind_cols(predict(lm_fit1000, new_data = new_data1000)) %>% metrics(truth = rel_humidity, estimate = .pred)
+#' The difference between accuracy in the training and testing set are small 
+#' 
+#' the test statistic and p-values are based on a t-distribution with degrees of freedom 
+#' equal to df= n−p = 1000-2 = 998.
 #'
-set.seed(123)
-linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
-  fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
-      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 10000)) %>%
-  pluck("fit") %>% glance()
-#' the test statistic and p-values are based on a t-distribution with degrees of freedom equal to df= n−p = 999-2=996.
 #'
-#'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% get_regression_points()
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% fitted()
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + prec.window + precip_mm + precip_h + sunlight_times,  
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
@@ -207,7 +230,7 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
 #'
 #'
 #' **Interaction**
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp*precip_h, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
@@ -216,13 +239,13 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
 #'the “interaction effect” is significant while the precip_h effect is not. However you can not exclude the
 #' explanatory variable precip_h and keep the interaction, so both should be kept.
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp*precip_h, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% get_regression_summaries()
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 DWD_precipitation %>%
   filter(year(timestamp) >= 2020) %>%
   sample_n(100) %>%
@@ -234,19 +257,20 @@ DWD_precipitation %>%
 #' another variable. Here, the associated effect of the variable temperature depends on whether 
 #' is raining or not. The difference in slopes for precipitation shows this.
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(rel_humidity ~ air_temp + precip_h, 
       data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% get_regression_table()
 #' the parameters for model without interaction is ver different
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
-  fit(rel_humidity ~ air_temp + precip_h, data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
+  fit(rel_humidity ~ air_temp + precip_h, 
+      data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100)) %>%
   pluck("fit") %>% get_regression_summaries()
 #'
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 DWD_precipitation %>%
   filter(year(timestamp) >= 2020) %>%
   sample_n(100) %>%
@@ -259,7 +283,7 @@ DWD_precipitation %>%
 #' 
 #' 
 #' **Bayesian Framework**
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 model <- stan_glm(rel_humidity ~ air_temp*precip_h, 
                   data=sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100))
 #'
@@ -310,7 +334,8 @@ plot(rope(model))
 #' using a binomial model (e.g., a logistic model), it is possible to reformulate the following hypothesis,
 #' “there is an important difference in this variable between the two groups” with the hypothesis 
 #' “this variable is able to discriminate between (or classify) the two groups (rainfall and dry)”
-set.seed(999)
+#' 
+set.seed(999, sample.kind = "Rounding")
 model_B <- stan_glm(precip_h ~ rel_humidity + air_temp, family = "binomial", refresh = 0,
                     data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100))
 #'
@@ -326,7 +351,7 @@ plot(rope(model_B))
 #'
 #'
 #' logistic
-set.seed(999)
+set.seed(999, sample.kind = "Rounding")
 model.BF <- glm(precip_h ~ rel_humidity + air_temp, family = binomial, 
                 data = sample_n(filter(DWD_precipitation, year(timestamp) >= 2020), 100))
 #'
@@ -340,8 +365,8 @@ DWD_precipitation %>%
   summarise(precip_hour_year = n(),
             rel_humidity = mean(rel_humidity, na.rm=T),
             air_temp = mean(air_temp, na.rm=T)) %>%
- glm(formula = precip_hour_year ~ rel_humidity + air_temp,
-              family = poisson) %>%
+  glm(formula = precip_hour_year ~ rel_humidity + air_temp,
+      family = poisson) %>%
   summary()
 #'
 #' 

@@ -11,16 +11,19 @@
 packages_list4 <- c("xts", "water","tidyverse", "lubridate", "vip", "summarytools", "tidymodels",
                       "moderndive", "vip", "kableExtra", "bayesplot", "bayestestR", "plsmod",
                       "rstanarm", "mixOmics", "modelbased", "performance", "see", "randomForest",
-                      "MASS", "corrr")
+                      "MASS", "corrr", "car")
 #'
-new.packages <- packages_list4[!(packages_list4 %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
+#' new.packages <- packages_list4[!(packages_list4 %in% installed.packages()[,"Package"])]
+#' if(length(new.packages)) install.packages(new.packages)
+#' #'
+#' update.packages <- packages_list4[(packages_list4 %in% old.packages()[,"Package"])]
+#' if(length(update.packages)) install.packages(update.packages)
 #'
 invisible(lapply(packages_list4, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 #'
 ETmodel <- read_rds("ETmodel.rds")
-DWD_precipitation <- read_rds("DWD_precipitation.rds")
+#DWD_precipitation <- read_rds("DWD_precipitation.rds")
 #' 
 #' 
 ETmodel$ETo <- hourlyET(data.frame(wind = na.approx(ETmodel$wind_speed),
@@ -139,16 +142,15 @@ pls_fit <-
   PLS_wf %>% 
   tune_grid(
     resamples = ET_cv,
-    metrics = metric_set(rmse),
+    #metrics = metric_set(rmse),
     #control = ctrl,
     grid = comp_grid)
 #' 
 pls_fit %>%
   collect_metrics() %>%
-  #filter(.metric == "rmse") %>%
+  filter(.metric == "rmse") %>%
   mutate(num_comp = factor(num_comp)) %>%
   ggplot(aes(x = num_comp, y = mean)) +
-    geom_line(size = 1.5, alpha = 0.6) +
     geom_point(size = 2) +
     scale_y_continuous(limits = c(0.11, 0.15))
 #' 
@@ -226,7 +228,7 @@ rf_fit <-
   rf_wf %>% 
   tune_grid(
     resamples = ET_cv,
-    metrics = metric_set(rmse),
+    #metrics = metric_set(rmse),
     #control = ctrl,
     grid = tree_grid)
 #' 
@@ -234,6 +236,7 @@ rf_fit %>% collect_metrics()
 #' 
 rf_fit %>%
   collect_metrics() %>%
+  filter(.metric == "rmse") %>%
   ggplot(aes(mtry, mean, color = factor(trees))) +
   geom_line(size = 1.5, alpha = 0.6) +
   geom_point(size = 2) 
@@ -410,7 +413,6 @@ correlate(ETdataS[,-35]) %>%
   print(n = 34)
 #' 
 #' 
-library(car)
 set.seed(123)
 linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
   fit(ET ~ ., data = ET_train) %>%
@@ -418,9 +420,10 @@ linear_reg() %>% set_engine("lm") %>% set_mode("regression") %>%
 #' 
 lm_test
 #' 
-vif(lm_test)
-#'  there are aliased coefficients in the model, in other words some variables are linear 
-#'  combination of other. 
+#' Test Multicolinearity
+# vif(lm_test)
+#' Error in vif.default(lm_test) : there are aliased coefficients in the model
+#' In other words some variables are linear combination of other. 
 #'  
 #' 
 vif(lm(ET ~ ., data = ET_train[,c(-17,-26,-27,-28,-29,-30,-31,-32,-33,-34)]))
