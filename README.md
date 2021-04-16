@@ -66,15 +66,5 @@ their choice with the instructors’ support.
   - Time-series modelling: *dealing with seasonality and trends to
     forecast with ARIMA models*
 
-**Other statistical methods**
-
-  - Multivariate Analysis: *Principal Components (PCA/PLSR), Cluster and
-    Factorial Analysis*
-  - What is still missing: *an overview of uncovering subjects such as
-    spatial Analysis and DOE*
-
-**Workshop** \* Hands-on: *working on your data and interest*
-
 1.  non\*compulsory module with a duration of 2x45 minutes offers to
-    help  
-    the participants who are not familiar with R and R studio.
+    help the participants who are not familiar with R and R studio.
