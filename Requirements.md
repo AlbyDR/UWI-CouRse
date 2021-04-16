@@ -43,7 +43,7 @@ This section will focus on data cleaning and processing using the tidy data conc
 For instance,
 `install.packages("tidyverse")`
 
-or through out the couRse with
+or throughout the couRse with
 
 `packages_list2.1 <- c("tidyverse", "lubridate")`
 
