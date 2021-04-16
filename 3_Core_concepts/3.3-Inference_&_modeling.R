@@ -13,11 +13,11 @@ packages_list3.3 <- c("tidyverse", "lubridate", "GGally", "summarytools", "tidym
                     "moderndive", "vip", "kableExtra", "bayesplot", "bayestestR", 
                     "rstanarm", "insight", "modelbased", "performance", "see", "car", "lmtest")
 #'
-#' new.packages <- packages_list3.3[!(packages_list3.3 %in% installed.packages()[,"Package"])]
-#' if(length(new.packages)) install.packages(new.packages)
-#' #'
-#' update.packages <- packages_list3.3[(packages_list3.3 %in% old.packages()[,"Package"])]
-#' if(length(update.packages)) install.packages(update.packages)
+new.packages <- packages_list3.3[!(packages_list3.3 %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list3.3[(packages_list3.3 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
 #'
 invisible(lapply(packages_list3.3, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'

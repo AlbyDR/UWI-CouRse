@@ -8,15 +8,17 @@
 #'
 #'## Example 3.2: Interval od Confidence and Hypothesis Test
 #'### 
-suppressPackageStartupMessages({
-  library(tidyverse)     # ggplot, readr and dplyr packages
-  library(lubridate)     # date-time
-  library(infer)
-  library(tidymodels)
-  library(summarytools)
-  library(moderndive)
-  library(extRemes)
-  })  # colours
+#'
+packages_list3 <- c("tidyverse", "lubridate", "infer", "summarytools", "tidymodels",
+                    "moderndive", "extRemes")
+#'
+new.packages <- packages_list3[!(packages_list3 %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+#'
+update.packages <- packages_list3[(packages_list3 %in% old.packages()[,"Package"])]
+if(length(update.packages)) install.packages(update.packages)
+#'
+invisible(lapply(packages_list3, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 #'
 DWD_temperature <- read_rds("DWD_temperature.rds")
