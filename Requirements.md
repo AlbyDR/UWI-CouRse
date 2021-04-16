@@ -38,25 +38,28 @@ If you have any doubt, visit the FAQ sections for Windows and Mac available in b
 R packages: finding packages that suit your needs
 This section will focus on data cleaning and processing using the tidy data concept.
 
-For instance,
+### Packages
 
-install.packages("tidyverse")
+For instance,
+`install.packages("tidyverse")`
+
 or through out the couRse with
 
-packages_list2.1 <- c("tidyverse", "lubridate")
+`packages_list2.1 <- c("tidyverse", "lubridate")`
 
-new.packages <- packages_list2.1[!(packages_list2.1 %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
+`new.packages <- packages_list2.1[!(packages_list2.1 %in% installed.packages()[,"Package"])]`
+`if(length(new.packages)) install.packages(new.packages)`
 
-invisible(lapply(packages_list2.1, library, character.only = T, quietly = TRUE, warn.conflicts = F))
+`invisible(lapply(packages_list2.1, library, character.only = T, quietly = TRUE, warn.conflicts = F))`
+
 Package that should to be installed are in the packages_list_prior.
 
-packages_list_prior <- c("tidyverse", "lubridate", "kableExtra","scales", "tidyquant", "cowplot",
+`packages_list_prior <- c("tidyverse", "lubridate", "kableExtra","scales", "tidyquant", "cowplot",
                        "gridExtra", "RColorBrewer", "colorspace", "summarytools", "corrr", "GGally",
                        "minerva", "magrittr", "vip", "tidymodels", "infer", "moderndive", "extRemes",
                        "bayesplot", "bayestestR", "rstanarm", "insight", "modelbased", "performance", 
                        "see", "car", "lmtest", "plsmod","mixOmics","modelbased", "performance", "see",
-                       "randomForest","MASS", "corrr", "car", "e1071", "astsa")
+                       "randomForest","MASS", "corrr", "car", "e1071", "astsa")`
                          
-packages_list_priorII <- c("sp", "mapview", "webshot", "suncalc", "raster", "httr", "sf", "fasterize", 
-                           "rasterVis", "RColorBrewer", "geobuffer", "ggspatial")
+`packages_list_priorII <- c("sp", "mapview", "webshot", "suncalc", "raster", "httr", "sf", "fasterize", 
+                           "rasterVis", "RColorBrewer", "geobuffer", "ggspatial")`
