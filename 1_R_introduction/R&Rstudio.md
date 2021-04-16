@@ -5,7 +5,9 @@ UWI-couRse
 
 # RStudio four main window ‘panes’:
 
-The Source pane, for editing, saving, and dispatching R code to the console (top left). Note that this pane does not exist by default when you start RStudio: it appears when you open an R script, e.g. via File -> New File -> R Script. A common task in this pane is to send code on the current line to the console, via Ctrl/Cmd+Enter.
+The Source pane, for editing, saving, and dispatching R code to the console (top left). 
+Note that this pane does not exist by default when you start RStudio: it appears when you open an R script. 
+e.g. via File -> New File -> R Script. A common task in this pane is to send code on the current line to the console, via Ctrl/Cmd+Enter.
 
 The Console pane. Any code entered here is processed by R, line by line. This pane is ideal for interactively testing ideas before saving the final results in the Source pane above.
 
