@@ -8,22 +8,140 @@
 #'
 #'## Example 5.2:EVA - Extreme Values Events 
 #'
-packages_list4 <- c("extRemes", "tidyverse", "lubridate")
+packages_list5.2 <- c("extRemes", "tidyverse", "lubridate")
 #'
-new.packages <- packages_list4[!(packages_list4 %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
+#' new.packages <- packages_list5.2[!(packages_list5.2 %in% installed.packages()[,"Package"])]
+#' if(length(new.packages)) install.packages(new.packages)
+#' #'
+#' update.packages <- packages_list5.2[(packages_list5.2 %in% old.packages()[,"Package"])]
+#' if(length(update.packages)) install.packages(update.packages)
 #'
+invisible(lapply(packages_list5.2, library, character.only = T, quietly = TRUE, warn.conflicts = F))
 #'
 DWD_temperature <- read_rds("DWD_temperature.rds")
 DWD_precipitation <- read_rds("DWD_precipitation.rds")
-#' 
-#' 
+#'
+#'### Precipitation
+#'
 #' **Block Maxima Approach**
+#' 
+bmPrec <- blockmaxxer(filter(DWD_precipitation[,1:2], !is.na(precip_mm)), which="precip_mm", 
+                      blocks = year(filter(DWD_precipitation[,1:2], !is.na(precip_mm))$timestamp))
+#'
+summary(bmPrec)
+#'
+plot(year(bmPrec$timestamp), bmPrec$precip_mm, col = "white", pch = 21, bg = "darkred", cex=1.5)
+#'
+GEV_mm <- fevd(bmPrec$precip_mm, type='GEV')
+GEV_mm
+#' 
+ci(GEV_mm, alpha=0.05, type="parameter")
+#' 
+plot(GEV_mm)
+plot(GEV_mm, "trace")
+#' 
+threshrange.plot(bmPrec$precip_mm, r = c(3, 10), type = "GP", nint = 20)
+#' 
+#' **Gumbel**
+Gumbel_mm <- fevd(bmPrec$precip_mm, type="Gumbel", units="mm")
+Gumbel_mm
+#'
+ci(Gumbel_mm, alpha=0.05, type="parameter")
+#'
+plot(Gumbel_mm)
+#plot(Gumbel_temp, "trace")
+#'
+return.level(Gumbel_mm, return.period=c(2,5,10,20,30,50,100), do.ci=TRUE)
+#'
+lr.test(Gumbel_mm, GEV_mm, alpha = 0.05)
+#'
+#' **Bayesian**
+Bayesian_mm <- fevd(bmPrec$precip_mm, method = "Bayesian")
+Bayesian_mm
+#'
+postmode(Bayesian_mm)
+#'
+plot(Bayesian_mm)
+plot(Bayesian_mm, "trace")
+#' The result is a distribution of the parameters locations, scale and shape
+#'
+ci(Bayesian_mm, alpha=0.05, type="parameter")
+return.level(Bayesian_mm, return.period=c(2,5,10,20,30,50,100), do.ci=TRUE)
+#'
+pextRemes(Bayesian_mm, c(32, 34, 36, 38, 40), lower.tail = FALSE)
+#'
+mrlplot(bmPrec$precip_mm)
+#'
+#'
+# PEACKS OVER THRESHOLD APPROACH
+# Data set of daily rainfall data
+#'
+bm_mm <- blockmaxxer(DWD_precipitation, which = "precip_mm", blocks=NULL, blen = 24, span = 24*365)
+bm_mm <- filter(bm_mm, !is.na(precip_mm))
+#'
+summary(bm_mm)
+#'
+mrlplot(bm_mm$precip_mm)
+threshrange.plot(bm_mm$precip_mm)
+#'
+#' **Generalized Pareto (GP)**
+GP_mm <- fevd(bm_mm$precip_mm, threshold = 3, type = "GP", units = "mm")
+GP_mm
+#'
+plot(GP_mm)
+#'
+ci(GP_mm, alpha = 0.05, type = "parameter")
+ci(GP_mm, alpha = 0.05, type = "return.level")
+#'
+#'
+return.level(GP_mm, return.period = c(10,20,30,50,100), do.ci = TRUE)
+#'
+#' Number of excesses
+count = 0
+for (i in c(1:length(bm_mm$precip_mm))){
+  if (bm_mm$precip_mm[i] >= 10){
+    count = count + 1
+  }
+}
+#'
+plot(y=bm_mm$precip_mm, x=bm_mm$timestamp)
+points(y=filter(bm_mm, precip_mm >= 20)$precip_mm,
+       x=filter(bm_mm, precip_mm >= 20)$timestamp, 
+       pch = 16, col = 'red')
+#'
+pextRemes(GP_mm, c(10, 20, 30, 40), lower.tail = FALSE)
+#'
+profliker (GP_mm, type ="parameter", which.par = 2,
+           main = "Profile Log - Likelihood for ShapeParameter")
+#'
+#'  100-year return level
+ci(GP_mm, method="proflik", xrange=c(18,38), verbose=TRUE)
+#'
+#' Fit the Poisson Process (PP) model to the daily data from above.
+PP_mm <- fevd(bm_mm$precip_mm, threshold = 3,
+              type = "PP", units = "mm")
+#'
+PP_mm
+#'
+plot(PP_mm)
+#'
+#' Fit the Exponential model to the daily data from above.
+Exp_mm <- fevd(bm_mm$precip_mm, threshold = 3,
+              type = "Exponential", units = "mm")
+Exp_mm
+#'
+plot(Exp_mm)
+#'
+#'
+#'
+#'### Temperature
+#' 
 DWD_temperature[,1:2] %>%
   filter(year(timestamp) >= 1900) %>%
   group_by(Year = year(timestamp), doy = yday(timestamp)) %>%
   summarise(Tmax = max(air_temp, na.rm = T)) %>%
   print(n=10) -> Max_tempday
+#' 
 #' 
 bmTempday <- blockmaxxer(Max_tempday, blocks = Max_tempday$doy, which = "Tmax")
 summary(bmTempday)
@@ -187,91 +305,4 @@ return.level(Bayesian_temp, return.period=c(2,5,10,20,30,50,100), do.ci=TRUE)
 #'
 pextRemes(Bayesian_temp, c(32, 34, 36, 38, 40), lower.tail = FALSE)
 #'
-mrlplot(bmTemp$air_temp)
-#'
-# PEACKS OVER THRESHOLD APPROACH
-# Dataset of daily rainfall data
-DWD_precipitation[,1:2] %>%
-  group_by(Year = year(timestamp), Month = month(timestamp), Doy = yday(timestamp)) %>%
-  summarise(mm_max = max(precip_mm, na.rm = T)) %>%
-  print(n=10) -> Max_mm
-#'
-8766/24
-#'
-bm_mm <- blockmaxxer(DWD_precipitation, which = "precip_mm", blocks=NULL, blen = 24, span = 24*365)
-bm_mm <- filter(bm_mm, !is.na(precip_mm))
-#'
-summary(bm_mm)
-#'
-mrlplot(bm_mm$precip_mm)
-threshrange.plot(bm_mm$precip_mm)
-#'
-#' **Generalized Pareto (GP)**
-GP_mm <- fevd(bm_mm$precip_mm, threshold = 3, type = "GP", units = "mm")
-GP_mm
-#'
-plot(GP_mm)
-#'
-ci(GP_mm, alpha = 0.05, type = "parameter")
-ci(GP_mm, alpha = 0.05, type = "return.level")
-#'
-profliker (GP_mm, type ="parameter", which.par = 2,
-main = "Profile Log - Likelihood for ShapeParameter")
-#'
-return.level(GP_mm, return.period = c(10,20,30,50,100), do.ci = TRUE)
-#'
-#' Number of excesses
-count = 0
-for (i in c(1:length(bm_mm$precip_mm))){
-  if (bm_mm$precip_mm[i] >= 10){
-    count = count + 1
-  }
-}
-#'
-plot(y=bm_mm$precip_mm, x=bm_mm$timestamp)
-points(y=filter(bm_mm, precip_mm >= 20)$precip_mm,
-       x=filter(bm_mm, precip_mm >= 20)$timestamp, 
-       pch = 16, col = 'red')
-#'
-pextRemes(GP_mm, c(10, 20, 30, 40), lower.tail = FALSE)
-#'
-#' 100-year return level
-ci(GP_mm, method="proflik", xrange=c(18,38), verbose=TRUE)
-#'
-#' Fit the Poisson Process (PP) model to the daily data from above.
-GP_mm <- fevd(bm_mm$precip_mm, threshold = 3,
-              type = "PP", units = "mm")
-#'
-GP_mm
-#'
-plot(GP_mm)
-#'
-#' Fit the Poisson Process (PP) model to the daily data from above.
-GP_mm <- fevd(bm_mm$precip_mm, threshold = 3,
-              type = "Exponential", units = "mm")
-GP_mm
-#'
-plot(GP_mm)
-#'
-bmPrec <- blockmaxxer(filter(bm_mm, !is.na(timestamp))[,1:2],
-                      blocks = year(filter(bm_mm, !is.na(precip_mm))$timestamp), which="precip_mm")
-#'
-filter(bmPrec, !is.na(timestamp))[,1:2]
-#'
-#'
-plot(year(bmPrec$timestamp), bmPrec$precip_mm, col = "white", pch = 21, bg = "darkred", cex=1.5)
-#'
-#'estimates of the auto-tail dependence function(s) (atdf) based on either chi (rho) 
-#' or chibar (rhobar), or both.
-atdf(Max_temp$Tmax, 0.75)
-#'
-#' The extremal index is a useful indicator of how much clustering of exceedances 
-#' of a threshold occurs in the limit of the distribution. For independent data, 
-#' theta = 1, (though the converse is does not hold) and if theta < 1, 
-#' then there is some dependency (clustering) in the limit.
-extremalindex(Max_temp$Tmax, threshold = 30, method = "runs", run.length = 9, blocks=Max_temp$Year)
-#'
-#' Decluster data above a given threshold to try to make them independent.
-dcTemp <- decluster(Max_temp$Tmax, 30, r = 9)
-plot(dcTemp)
 #'
