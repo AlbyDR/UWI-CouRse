@@ -60,6 +60,9 @@ Package that should to be installed are in the packages_list_prior.
                        "bayesplot", "bayestestR", "rstanarm", "insight", "modelbased", "performance", 
                        "see", "car", "lmtest", "plsmod","mixOmics","modelbased", "performance", "see",
                        "randomForest","MASS", "corrr", "car", "e1071", "astsa")`
+                       
+`new.packages <- packages_list_prior[!(packages_list %in% installed.packages()[,"Package"])]`
+`if(length(new.packages)) install.packages_list_prior(new.packages)`
                          
 `packages_list_priorII <- c("sp", "mapview", "webshot", "suncalc", "raster", "httr", "sf", "fasterize", 
                            "rasterVis", "RColorBrewer", "geobuffer", "ggspatial")`
