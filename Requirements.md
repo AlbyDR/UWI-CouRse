@@ -59,7 +59,7 @@ Package that should to be installed are in the packages_list_prior.
                        "minerva", "magrittr", "vip", "tidymodels", "infer", "moderndive", "extRemes",
                        "bayesplot", "bayestestR", "rstanarm", "insight", "modelbased", "performance", 
                        "see", "car", "lmtest", "plsmod","mixOmics","modelbased", "performance", "see",
-                       "randomForest","MASS", "corrr", "car", "e1071", "astsa")`
+                       "randomForest","MASS", "corrr", "car", "e1071", "astsa", "ggridges", "anytime", "Evapotranspiration")`
                        
 `new.packages <- packages_list_prior[!(packages_list %in% installed.packages()[,"Package"])]`
 `if(length(new.packages)) install.packages_list_prior(new.packages)`
