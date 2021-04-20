@@ -1,0 +1,749 @@
+---
+title: "Dates and times"
+author: "Basem Aljoumani"
+date: "2021 04 19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning= FALSE, results='hide', message=FALSE, echo=FALSE}
+library(lubridate)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(astsa)
+library(e1071) 
+library(ggridges)
+library(readr)
+library(anytime)
+library(Evapotranspiration)
+```
+***
+
+
+## The first step, you have to tell R “this is a date”. with as.Date.  wirte "2021-04-19"
+
+```{r }
+"2021-04-19"
+```
+## test its sturcture by str(), 
+```{r}
+str("2021-04-19")
+```
+ 
+ ## now , write it as.Date() and tet its stucture 
+```{r}
+str(as.Date("2021-04-19"))
+```
+
+   
+***
+
+## data from, Aljoumani, B., Kluge, B., Sanchez, J., & Wessolek, G. (2019). Evaluating the variation of dissolved metals on a highway roadside using a generalized additive mixed model (GAMM). Water, Air, & Soil Pollution, 230(4), 93.
+
+
+***
+
+
+
+-  Read data of “dataD.csv” in R using read.csv() fuction and called it dd:
+## dd <- read.csv(----, header = T, sep = ";")
+
+- Read the 6 observation from dd:
+## head(--)
+
+- Test the its structure and notice the structure of Datum column
+## str(--)
+
+
+```{r echo=F, message= F, warning= F, error= F, results='hide'}
+
+dd <- read.csv("dataD.csv", header = T,sep = ";")
+head(dd)
+
+str(dd$Datum)
+
+```
+
+***
+
+## Various ways of writing Apr 19 2021
+"April 19 2201", "2021-04-19", "19 Apr 2021", "04-19-2021"
+
+
+```{r}
+
+da <- c("April 19 2021", "2021-04-19", "19 Apr 2021", "04-19-2021")
+str(anytime(da))
+```
+
+
+***
+
+
+##Plot the copper observations vs Datum using ggplot:
+
+##ggplot(dd, aes( x = ---, y = --, group = Depth, colors(Depth))) + geom_line(aes(color=Depth))+   facet_wrap(~Soil.material)
+## where x = Datum and  y = Cr
+
+```{r echo= F, message= FALSE, error= FALSE, warning=FALSE }
+
+ggplot(dd, aes( x = Datum, y = Cr, group = Depth, colors(Depth))) + geom_line(aes(color=Depth))+ 
+  facet_wrap(~Soil.material)
+```
+
+***
+
+
+
+- Let R read the Datum column as datetime using as.Date.character() function:  dd$Datum=as.Date.character(----,"%d.%m.%Y")
+
+## now check the type of dd$Datum by typeof() function and test its class by class()
+- Try to plot again the Datum vs Cr:
+
+##ggplot(dd, aes( x = Datum, y = Cr, group = Depth, colors(Depth))) + geom_line(aes(color=Depth))+  facet_wrap(~Soil.material)
+
+
+```{r echo= F, message= FALSE, error= FALSE, warning=FALSE}
+dd$Datum <- as.Date.character(dd$Datum,"%d.%m.%Y")
+#dd$Depth=factor(dd$Depth,levels=c("1","2","3","0","15","30"))
+
+```
+
+```{r}
+typeof(dd$Datum)
+class(dd$Datum)
+```
+
+
+***
+
+```{r echo= F, message= FALSE, error= FALSE, warning=FALSE}
+#dd$Datum=as.Date.character(dd$Datum,"%d.%m.%Y")
+#dd$Depth=factor(dd$Depth,levels=c("1","2","3","0","15","30"))
+
+
+ggplot(dd, aes( x = Datum, y = Cr, group = Depth, colors(Depth))) + geom_line(aes(color=Depth))+ 
+  facet_wrap(~Soil.material)
+
+```
+***
+
+
+## we see above that they printed as date but stored as double, since they stored as numbers which indicate the number of days since 1970 the first day of 1970. if we check: using as.numeric()
+- Use as.numeric() function to check the first 6 observations of Datum: 
+head(as.numeric(--)
+
+- Use > or <  between the first two observations of Datum: 
+Dd$Datum[1]  -- dd$Datum[2]
+
+- Add 1 to the frist observation of Datum:
+dd$Datum[1] + --
+
+```{r}
+head(as.numeric(dd$Datum))
+```
+
+```{r}
+dd$Datum[1] > dd$Datum[2]
+
+```
+
+```{r}
+dd$Datum[1] +1
+```
+
+***
+
+
+## next we learn something built in R functions that are useful for doing things related to dates and times
+- Create dataframe called date_6 contains the first 6 obbs of Datum: 
+--- <- head(dd$Datum)
+
+- Test these functions : 
+weekdays(date_6)   # tell you the weekday
+months(date_6)     # tell you the month 
+
+Sys.Date ()        # tell you the current date
+date()             # tell you the current date and time 
+
+
+```{r warning=FALSE }
+date_6 <- head(dd$Datum)
+weekdays(date_6)   # tell you the weekday
+months(date_6)     # tell you the month 
+Sys.Date ()        # tell you the current date
+date()             # tell you the current date and time 
+```
+
+***
+
+## as.Date() function is dealing with date , it does not handle date and times. R contains a couple of data class, "POSIXct" and "POSIXlt" to deal with date/time data. POSIXlt encodes a date/time as the number of seconds sicne the first day 1970. POSIXct stores date/time data as list with items like year, month, day, hour, minute and second.You could convert date/time in string format to date types using as.POSIXct() and as.POSIXlt()
+
+- Use as.POSIXct to read Datum as date,called it date_ct:
+date_ct <- as.POSIXct(---)
+head(date_ct)
+
+
+```{r }
+date_ct <- as.POSIXct(dd$Datum)
+head(date_ct)
+
+```
+
+***
+
+
+
+## Data from T1 project  Role of dust and solid waste on water and contaminant transport processes at the pavement-water interface, Dr. Anne Timm
+
+- Read the file “lys.txt“ called it lys, check its name columns, see the first 6 obbs and its datetime column structure:
+lys<- read.csv(--- , sep = ";", header = T)
+names(--)
+head(--)
+str(---)
+
+```{r}
+lys<- read.csv("lys.txt", sep = ";", header = T)
+names(lys)
+head(lys)
+str(lys$datetime)
+```
+
+***
+
+- Use as.POSIXlt() to read the datetime as date and time, called it d_dc, see its 6 obbs and its structure:
+
+d_dc <- as.POSIXlt(--)
+head(--)
+str(--)
+
+```{r}
+d_dc <- as.POSIXlt(lys$datetime)
+head(d_dc)
+str(d_dc)
+
+
+```
+
+***
+
+# Subtract the time between d_dc[29] and  d_dc[2]
+- Subtract the time between d_dc[29] and  d_dc[2]
+
+```{r}
+d_dc[29]- d_dc[2]
+```
+
+## extract features of a date/time encoded as POSIKlt
+$year  # years
+$mon   # numeric month
+$mday  # day of the month
+$wday  # day of the week
+$yday  # day of the year 
+$hour  # hours
+$min   # minutes
+$sec   # seconds
+
+- Extract day of the month for the first 6 obbs of d_dc:
+d_dc1<- head(--, 12)
+--$mday
+```{r}
+d_dc1<- head(d_dc)
+d_dc1$mday
+```
+
+***
+
+
+```{r}
+d_dc1 <- head(d_dc)
+d_dc1$hour
+head(d_dc1)
+```
+
+***
+
+
+
+
+# plotting the soil moisture of lysimter cobblestones vs datetime:
+- try to plot the data of soil moisture between "2016-09-09 17:30:00" and "2017-03-01 02:30:00":
+- create dataframe d1 where:
+- slect the datetime, lys09_depth1_theta from lys
+- create new column called ly contians 8271 of "ly9"
+- save it as file 'theta091.csv'
+
+d1 <- lys %>% 
+  select(datetime, lys09_depth1_theta) %>% 
+  mutate(ly=rep('ly9', 8271)) %>% 
+  write_csv('theta091.csv')
+
+- rename the second column of d1 to "theta"
+
+colnames(d1)[2]<- 'theta'
+head(d1)
+- check its 6 obbs by head()
+
+- read the datetime of d1 as dates and times 
+   d1$datetime <- ymd_hms(d1$datetime)
+- plot the whole data of theta vs datetime:
+ggplot(d1, aes(x =--, y =--  )) + geom_line()
+weher x = datetime, y = theta
+
+- plot the data of theta between "2016-09-09 17:30:00" and "2017-03-01 02:30:00" using as.POSIXct()
+
+```{r warning=FALSE, error=FALSE}
+
+d1 <- lys %>% select(datetime,lys09_depth1_theta) %>% 
+ mutate(ly=rep('ly9', 8271)) %>% 
+write_csv('theta091.csv')
+
+
+
+
+colnames(d1)[2]<- 'theta'
+head(d1)
+
+
+d1$datetime <- ymd_hms(d1$datetime)
+
+ggplot(d1, aes(x =datetime, y =theta )) + geom_line()
+ggplot(d1, aes(x =datetime, y =theta )) + geom_line() +
+   xlim(as.POSIXct("2016-09-09 17:30:00"), as.POSIXct("2017-03-01 02:30:00"))
+
+
+```
+***
+
+
+
+
+## to see the data of soil moisture vs datetime for each lysimter:
+
+## ploting the soil moisture vs datetime for concrete slabs lysimter
+- create dataframe d2 where:
+- slect the datetime, lys10_depth1_theta from lys 
+- create new column called ly contians 8271 of "ly10"
+- save it as file 'theta101.csv'
+
+d2 <- lys %>% 
+  select(datetime, lys10_depth1_theta) %>% 
+  mutate(ly=rep('ly10', 8271)) %>% 
+  write_csv('theta101.csv')
+  
+  
+- rename the second column of d2 to "theta"
+
+colnames(d2)[2]<- 'theta'
+
+- check its 6 obbs by head()
+
+- read the datetime of d2 as dates and times 
+   d2$datetime <- ymd_hms(d2$datetime)
+   
+- create d3 that contains d1 and d2:
+
+d3 <-rbind(d1,d2)
+- see the first 6 obbs:
+head(d3)
+
+- plot the soil moisture (theta) from d3 vs datetime for each lysimter:
+ggplot(d3, aes(x =datetime , y = theta)) +
+  geom_line() +
+    facet_wrap(~ ly, ncol = 1)
+
+```{r warning=FALSE, error=FALSE}
+
+d2 <- lys %>% 
+  select(datetime, lys10_depth1_theta) %>% 
+  mutate(ly=rep('ly10', 8271)) %>% 
+  write_csv('theta101.csv')
+
+colnames(d2)[2]<- 'theta'
+
+
+d2$datetime <- ymd_hms(d2$datetime)
+
+
+d3 <-rbind(d1,d2)
+head(d3)
+
+#month<- month(d3$datetime,label =T)
+#ggplot(d3, aes( x =theta, y= month, height= ..density.., fill= ly))+
+   #   geom_density_ridges(alpha=0.25) + xlab('VWC_1')
+
+#month1<- month(d1$datetime,label =T)
+#names(d1)
+ggplot(d3, aes(x =datetime , y = theta)) +
+  geom_line() +
+    facet_wrap(~ ly, ncol = 1)
+
+#ggplot(d1, aes(x =datetime, y =theta )) + geom_line() + scale_x_date(date_labels = "%m-%Y")
+#summary(d1)
+#j <-as.POSIXct("2016-09-09 17:30:00")
+#str(j)
+```
+
+
+
+## Find the largest date
+
+
+
+```{r}
+last_date <- max(d1$datetime)
+```
+
+# data with the largest date
+
+```{r}
+last_data <- filter( d1, datetime == last_date)
+```
+
+
+## Find the values of theta in ly10 when the time is greater that 1st Qu.:2016-09-09 17:30:00 , 
+
+```{r results='hide'}
+
+d3$ly <- as.factor(d3$ly)
+release_time <- as.POSIXct("2016-09-10 18:00:00", tz = "UTC") # Universal Time Coordinated /
+
+d3 %>% 
+   filter(d3$datetime > release_time, ly =="ly10" )
+```
+
+
+***
+
+
+
+## Parsing dates in lubridate 
+- Use ymd() from lubridate to read  "2021-04-19"as date, called it t, check class(t)
+ t <- ymd(--)
+class(t)
+- Repeat it for "2021.04.19“, called it tt:
+tt <- ymd(--)
+class(tt)
+tt
+- Try with "2021 Apr 19th“, called it ttt, check its class:
+ttt <- ymd(----)
+class(ttt)
+ttt
+
+```{r}
+t <- ymd("2021-04-19")
+class(t)
+t
+
+tt <- ymd("2021.04.19")
+class(tt)
+tt
+
+ttt <- ymd("2021 Apr 19th")
+class(ttt)
+ttt
+```
+
+
+***
+
+```{r}
+
+parse_date_time2("2021-04-19 13:30:06",  "YmdHMS", tz = "UTC", lt = TRUE) # could use  tz = "America/New_York"
+
+parse_date_time("2021-04-19", orders="ymd")
+
+
+
+parse_date_time(c("2021-04-19", "19-04-2021"),orders = c("ymd", "dmy"))
+
+
+```
+
+***
+
+
+```{r}
+
+short_dates <- c("19 April 2021", "April 2021", "2021")
+parse_date_time(short_dates, orders = c("dmY", "mY", "Y"))
+```
+
+
+***
+
+## Nice plot 
+## Plot the Temperature below the surface pavement (concrete slabs) vs datetime
+lys2 <- lys %>% 
+  mutate(datetime = ymd_hms(datetime)) #Create, modify, and delete columns
+head(lys2)
+g <- ggplot(lys2, aes(x = datetime, y = lys10_below_surface_temp)) +
+  geom_line(color = "red")
+g + labs(title = "Temperature below surface",
+              subtitle = "Concrete slabs",
+              caption = "Data source: Anne Timm, Thesis 2019",
+              x = "Date", y = "Temperature C°",
+              tag = "A") + theme(
+  plot.title = element_text(hjust = 0.5),
+  plot.subtitle = element_text(hjust = 0.5)
+)
+
+```{r warning=FALSE, echo=FALSE}
+head(lys)
+lys2 <- lys %>% 
+  mutate(datetime = ymd_hms(datetime)) #Create, modify, and delete columns
+head(lys2)
+g <- ggplot(lys2, aes(x = datetime, y = lys10_below_surface_temp)) +
+  geom_line(color = "red")
+g + labs(title = "Temperature below surface",
+              subtitle = "Concrete slabs",
+              caption = "Data source: Anne Timm, Thesis 2019",
+              x = "Date", y = "Temperature C°",
+              tag = "A") + theme(
+  plot.title = element_text(hjust = 0.5),
+  plot.subtitle = element_text(hjust = 0.5)
+)
+```
+
+***
+
+
+
+## make_date()function 
+- read the data from "datFlow.txt", called it data, and check its first 6 obbs:
+
+data<- read.csv("---", sep = "\t")
+head(---)
+
+- create dataframe from data dataframe called data_hourly where datetime column contians Year, Month and day data ,using make_date() function:
+
+data_hourly  <- data  %>% 
+  mutate(datetime = make_date(year = ---, month = ----, day = ---))
+
+```{r}
+data<- read.csv("datflow.txt", sep = "\t")
+head(data)
+
+
+data_hourly  <- data  %>% 
+  mutate(datetime = make_date(year = Year, month = Month, day = day))
+head(data_hourly)
+str(data_hourly)
+#View(data_hourly)
+```
+  
+
+***
+
+## plot  Discharge, river ,m3/s vs datetime
+
+- build dataframe from data_hourly called data_hourly2 ,add 
+    - column called datatime_string  contians datetime and time columns with "T" letter as separation
+     - column called datetime that read datatime_string as dates and times 
+data_hourly2<- data_hourly  %>% 
+  mutate(
+    datetime_string = paste(datetime, time, sep = "T"),
+    datetime = ymd_hms(datetime_string))
+    
+- see the first 6 obbs and its structure 
+head(---)
+str(---)
+     
+- plot :
+ g <- ggplot(data_hourly2, aes(x = datetime, y = Discharge)) +
+  geom_line(color = "red")
+g + labs(title = "Discharge, river ,m3/s",
+              subtitle = "Iran",
+              caption = "Data source: Fatima, Thesis 2017",
+              x = "Date", y = "Discharge m3/s",
+              tag = "A") + theme(
+  plot.title = element_text(hjust = 0.5),
+  plot.subtitle = element_text(hjust = 0.5)
+)
+```{r  warning=FALSE}
+
+
+
+ data_hourly2<- data_hourly  %>% 
+  mutate(
+    datetime_string = paste(datetime, time, sep = "T"),
+    datetime = ymd_hms(datetime_string))
+ head(data_hourly2)
+  str(data_hourly2)
+  
+ 
+  g <- ggplot(data_hourly2, aes(x = datetime, y = Discharge)) +
+  geom_line(color = "red")
+g + labs(title = "Discharge, river ,m3/s",
+              subtitle = "Iran",
+              caption = "Data source: Fatima, Thesis 2017",
+              x = "Date", y = "Discharge m3/s",
+              tag = "A") + theme(
+  plot.title = element_text(hjust = 0.5),
+  plot.subtitle = element_text(hjust = 0.5)
+)
+```
+
+***
+
+
+
+# Extracting parts of a datetime
+
+
+
+```{r}
+
+month(lys$datetime, label = T) %>% table()
+mean(hour(lys$datetime) < 13) #How often is the hour before 12 (noon)?
+wday(lys$datetime, label =T) %>% table()
+```
+***
+
+
+## MOre plot
+
+```{r }
+#lys$wday <- wday(lys$datetime, label =T)
+#head(lys)
+#head(d3)
+
+
+d3$datetime <- ymd_hms(d3$datetime)
+
+d3$ly <- as.factor(d3$ly)
+
+summary(d3)
+d3$month <- month(d3$datetime, label =T)
+
+head(d3)
+ggplot(d3, aes(month)) +
+  geom_bar() +
+  facet_wrap(~ ly, ncol = 1, scale = "free_y")
+```
+
+***
+
+
+```{r}
+d3_daily <- d3 %>%
+  mutate(
+    year = year(datetime),
+    yday = yday(datetime),
+    month = month(datetime, label = TRUE))
+
+# plot theta for for all years
+ggplot(d3_daily, aes(x = yday, y = theta)) +
+  geom_line(aes(group = year), alpha = 0.5)
+```
+
+***
+
+
+# distribution of soil moisture below the lysimter (ly10 = concrete slabs , ly9= cobbelstones) by month
+```{r warning=FALSE}
+
+month<- month(d3$datetime,label =T)
+
+ggplot(d3, aes(x = theta, y = month, height = ..density.., fill=ly))  +
+geom_density_ridges(scale = 3, rel_min_height = 0.01) 
+```
+
+
+***
+`
+
+#  from Data Anne Timm, Climate data, How many rain events for each month
+```{r warning=FALSE}
+clim <- read.csv("climate_hour_all.txt", sep=";")
+#head(clim)
+clim$datetime<- ymd_hms(clim$datetime)
+
+
+pre_hourly <- clim %>%   # create new columnes
+  mutate(
+    hour = hour(datetime),
+    year = year(datetime),
+    month = month(datetime, label = TRUE),
+    rainy = prec > 0
+  )
+#View(pre_hourly)
+
+pre_day <- pre_hourly %>%    # Filter for hours between 8am and 10pm (inclusive)
+  filter(hour >= 8, hour <= 22)
+
+#head(pre_day)
+
+rainy_days <- pre_day %>%    # Summarise for each date if there is any rain 
+  group_by(month, datetime) %>%
+  summarise( 
+    any_rain = any(rainy)
+  )
+
+#View(rainy_days)
+
+rainy_days %>%  # Summarise for each month, the number of days with rain
+  summarise(
+    days_rainy = sum(any_rain)
+  )
+
+```
+
+***
+
+```{r}
+clim_time<- clim$datetime
+head(clim_time)
+head(clim_time) %>%  hour()
+
+head(clim_time) %>% ceiling_date(unit = "hour")
+
+clim_hourly <- clim%>%
+  mutate(
+    day = floor_date(datetime, unit = "day")
+  )
+head(clim_hourly)
+```
+
+***
+
+
+
+```{r}
+head(clim_time) %>% floor_date(unit = "hour")
+
+clim_hourly <- clim%>%
+  mutate(
+    day = floor_date(datetime, unit = "day")
+  )
+
+
+```
+```{r}
+clim_hourly %>%   # Count observations per day
+  count(day) 
+
+```
+
+```{r}
+data(climatedata)
+
+head(climatedata)
+dat <- climatedata %>% 
+  mutate(datetime=make_date( year=Year, month=Month, day=Day))
+head(dat)
+
+
+```
+
+
+
+
+
+
+
+
