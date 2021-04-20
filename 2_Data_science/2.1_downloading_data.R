@@ -67,7 +67,7 @@ arrange(DWDstations, distROTH)
 #' example [5] "<a href=\"air_temperature/\">air_temperature/</a> 
 
 writeLines(unlist(str_extract_all(
-  readLines("http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/"),
+  readLines("http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/"),
           "\".+/\"")))
 #' 
 # [1] "=\"../\""                "=\"air_temperature/\""   "=\"cloud_type/\""       
@@ -81,7 +81,7 @@ writeLines(unlist(str_extract_all(
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/"
 zipfile2 <- readLines(download.url2)
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TU_03987_.+(.zip)"))
@@ -101,7 +101,7 @@ summary(dwd.temp.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TU_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -132,7 +132,7 @@ Air_Temp <- na_if(Air_Temp, -999.00)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/precipitation/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/precipitation/historical/"
 zipfile2 <- readLines(download.url2)
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_RR_03987_.+(.zip)"))
@@ -152,7 +152,7 @@ summary(dwd.prec.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/precipitation/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/precipitation/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_RR_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -185,7 +185,7 @@ precipitation <- na_if(precipitation, -999.000)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/pressure/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/pressure/historical/"
 zipfile2 <- readLines(download.url2)
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_P0_03987_.+(.zip)"))
@@ -205,7 +205,7 @@ summary(dwd.press.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/pressure/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/pressure/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_P0_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -236,7 +236,7 @@ pressure <- na_if(pressure, -999.0)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_FF_03987_.+(.zip)"))
@@ -256,7 +256,7 @@ summary(dwd.wind.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_FF_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -288,7 +288,7 @@ wind <- na_if(wind, -999)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind_synop/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind_synop/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_F_03987_.+(.zip)"))
@@ -308,7 +308,7 @@ summary(dwd.wind_S.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind_synop/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/wind_synop/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_F_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -340,7 +340,7 @@ wind_S <- na_if(wind_S, -999.000)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/soil_temperature/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/soil_temperature/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_EB_03987_.+(.zip)"))
@@ -360,7 +360,7 @@ summary(dwd.soil_temperature.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/soil_temperature/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/soil_temperature/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_EB_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -395,7 +395,7 @@ soil_temperature <- na_if(soil_temperature, -999.0)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/visibility/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/visibility/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_VV_03987_.+(.zip)"))
@@ -415,7 +415,7 @@ summary(dwd.visibility.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/visibility/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/visibility/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_VV_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -448,7 +448,7 @@ summary(visibility)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/sun/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/sun/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_SD_03987_.+(.zip)"))
@@ -468,7 +468,7 @@ summary(dwd.sun.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/sun/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/sun/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_SD_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -498,7 +498,7 @@ summary(sun)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/dew_point/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/dew_point/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TD_03987_.+(.zip)"))
@@ -518,7 +518,7 @@ summary(dwd.dew_point.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/dew_point/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/dew_point/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TD_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -551,7 +551,7 @@ dew_point <- na_if(dew_point, -999.000)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloud_type/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloud_type/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_CS_03987_.+(.zip)"))
@@ -572,7 +572,7 @@ summary(dwd.cloud_type.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloud_type/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloud_type/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_CS_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -626,7 +626,7 @@ cloud_type <- na_if(cloud_type, -999)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloudiness/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloudiness/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_N_03987_.+(.zip)"))
@@ -646,7 +646,7 @@ summary(dwd.cloudiness.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloudiness/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloudiness/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_N_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -676,7 +676,7 @@ summary(cloudiness)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/extreme_wind/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/extreme_wind/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_FX_03987_.+(.zip)"))
@@ -696,7 +696,7 @@ summary(dwd.extreme_wind.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/extreme_wind/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/extreme_wind/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_FX_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -727,7 +727,7 @@ summary(extreme_wind)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/moisture/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/moisture/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TF_03987_.+(.zip)"))
@@ -747,7 +747,7 @@ summary(dwd.moisture.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/moisture/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/moisture/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_TF_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -783,7 +783,7 @@ moisture <- na_if(moisture, -99.900)
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/weather_phenomena/historical/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/weather_phenomena/historical/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_WW_03987_.+(.zip)"))
@@ -803,7 +803,7 @@ summary(dwd.weather_phenomena.hist)
 #' 
 #' Download recent data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/weather_phenomena/recent/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/weather_phenomena/recent/"
 zipfile2 <- readLines(download.url2)
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_WW_03987_.+(.zip)"))
 zipfile2 <- str_split(zipfile2, ">")[[1]][2]
@@ -832,7 +832,7 @@ colnames(weather_phenomena) <- c("id", "timestamp", "QN_8", "Weather_changes_fac
 #' 
 #' Download historical data
 temp2 <- tempfile()
-download.url2 <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/solar/"
+download.url2 <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/solar/"
 zipfile2 <- readLines(download.url2) 
 zipfile2
 zipfile2 <- unlist(str_extract_all(zipfile2, "stundenwerte_ST_03987_.+(.zip)"))
