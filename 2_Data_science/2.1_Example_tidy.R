@@ -25,7 +25,7 @@ invisible(lapply(packages_list2.1, library, character.only = T, quietly = TRUE, 
 #' `string::str_extract_all` and `string::str_split`
 #' 
 temp <- tempfile()
-download.url <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/precipitation/historical/"
+download.url <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/precipitation/historical/"
 zipfile <- readLines(download.url)
 zipfile <- unlist(str_extract_all(zipfile, "stundenwerte_RR_03987_.+(.zip)"))
 zipfile
@@ -64,7 +64,7 @@ dwd_prec <- na_if(dwd_prec, -999)
 #' 
 #' **Download historical data**
 temp <- tempfile()
-download.url <- "http://ftp-cdc.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloudiness/historical/"
+download.url <- "http://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/cloudiness/historical/"
 zipfile <- readLines(download.url) 
 zipfile <- unlist(str_extract_all(zipfile, "stundenwerte_N_03987_.+(.zip)"))
 zipfile <- str_split(zipfile, ">")[[1]][2]
