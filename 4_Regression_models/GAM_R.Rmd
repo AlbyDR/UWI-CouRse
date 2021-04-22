@@ -1,0 +1,486 @@
+---
+title: "Generalized addtive model GAM"
+author: " Basem Aljoumani"
+date: "22/04/2021"
+output: html_document
+---
+
+
+
+```{r}
+library(MASS)
+library(mgcv)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(gamair)
+library(sp)
+```
+
+
+
+
+***
+
+
+    
+```{r}
+?mcycle
+head(mcycle)
+plot(mcycle)
+```
+
+
+```{r}
+Linear_model  <- lm(accel~times, data = mcycle)
+termplot(Linear_model ,se=T, partial.resid = T)
+
+```
+
+***
+
+
+    
+```{r}
+nonlin_model<- gam(accel~ s(times),  data = mcycle)
+
+plot(nonlin_model, residuals = T, pch=1)
+```
+
+***
+
+
+
+
+
+
+
+```{r}
+coef(nonlin_model)
+```
+    
+
+
+
+
+***
+
+```{r}
+nonlin_model2<- gam(accel~ s(times, k=2),  data = mcycle)
+
+coef(nonlin_model2)
+```
+    
+```{r}
+nonlin_model25<- gam(accel~ s(times, k=25),  data = mcycle)
+
+coef(nonlin_model25)
+```
+
+```{r}
+par(mfrow=c(2,1))
+plot(nonlin_model2, residuals = T, pch = 1)
+plot(nonlin_model25, residuals = T, pch = 1)
+```
+
+***
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+nonlin_model <- gam(accel ~ s(times), data = mcycle, method = "REML")
+nonlin_model$sp
+
+
+nonlin_model_s1 <- gam(accel ~ s(times), data = mcycle, sp = 0.1)
+
+
+nonlin_model_s2 <- gam(accel ~ s(times), data = mcycle, sp = 0.0001)
+
+```
+
+
+```{r }
+
+par(mfrow = c(2, 1))
+plot(nonlin_model_s1, residuals = TRUE, pch = 1)
+plot(nonlin_model_s2, residuals = TRUE, pch = 1)
+```
+ 
+ ***
+
+ 
+
+    
+```{r}
+
+nonlin_model_sk <- gam(accel~ s(times, sp = 0.0001, k = 50),data = mcycle, method= "REML")
+
+
+plot(nonlin_model_sk, residuals = TRUE, pch = 1)
+```
+
+ ***
+ 
+  
+
+
+
+
+
+
+```{r}
+?mpg # from gamair package
+
+data(mpg)
+head(mpg)
+str(mpg)
+
+# Fit the model
+mod<- gam(city.mpg ~ s(weight) +s(length) +s(price), 
+                data = mpg, method = "REML")
+
+# Plot the model
+plot(mod, pages = 1)
+```
+***
+
+
+
+```{r out.width="400px", warning=FALSE, echo=FALSE}
+
+mod2 <- gam(city.mpg ~ s(weight) + s(length) + s(price) + fuel + drive+ style, 
+                 data = mpg, method = "REML")
+
+plot(mod2, all.terms = TRUE, pages = 1)
+
+```
+
+
+
+
+
+```{r}
+mod3<- gam(city.mpg ~ s(weight, by=drive)+s(length,by =drive) +s(price, by =drive) + drive, 
+                 data = mpg, method = "REML")
+
+# Plot the model
+plot(mod3, pages = 1)
+```
+
+
+
+
+
+
+
+***
+
+
+
+
+##  summary all the data related to the experiment 
+```{r echo = F, warning=F, message=F}
+
+dataTot <- read.csv("uwiT1.csv")
+dataTot$datetime <- ymd_hms(dataTot$datetime)
+summary(dataTot)
+```
+
+
+```{r echo = F, warning=F, message=F}
+
+dataTot <- read.csv("uwiT1.csv")
+dataTot$datetime <- ymd_hms(dataTot$datetime)
+summary(dataTot)
+```
+```{r echo=F, warning=F, message= F, error= F}
+
+data1<-dataTot[dataTot$depthT=="5" & dataTot$lysimeter=="cobblestones",]
+prec=data1$prec
+n=length(prec)
+precacum1=prec[-c(n)]+prec[-c(1)]
+precacum2=prec[-c((n-1):n)]+prec[-c(1,n)]
+precacum3=prec[-c((n-2):n)]+prec[-c(1,(n-1):n)]+prec[-c(1:2,n)]
+precacum4=prec[-c((n-3):n)]+prec[-c(1,(n-2):n)]+prec[-c(1:2,(n-1):n)]+prec[-c(1:3,n)]
+precacum5=prec[-c((n-4):n)]+prec[-c(1,(n-3):n)]+prec[-c(1:2,(n-2):n)]+prec[-c(1:3,(n-1):n)]+prec[-c(1:4,n)]
+precacum6=prec[-c((n-5):n)]+prec[-c(1,(n-4):n)]+prec[-c(1:2,(n-3):n)]+prec[-c(1:3,(n-2):n)]+prec[-c(1:4,(n-1):n)]+prec[-c(1:5,n)]
+precacum7=prec[-c((n-6):n)]+prec[-c(1,(n-5):n)]+prec[-c(1:2,(n-4):n)]+prec[-c(1:3,(n-3):n)]+prec[-c(1:4,(n-2):n)]+prec[-c(1:5,(n-1):n)]+prec[-c(1:6,n)]
+precacum8=prec[-c((n-7):n)]+prec[-c(1,(n-6):n)]+prec[-c(1:2,(n-5):n)]+prec[-c(1:3,(n-4):n)]+prec[-c(1:4,(n-3):n)]+prec[-c(1:5,(n-2):n)]+prec[-c(1:6,(n-1):n)]+prec[-c(1:7,n)]
+precacum9=prec[-c((n-8):n)]+prec[-c(1,(n-7):n)]+prec[-c(1:2,(n-6):n)]+prec[-c(1:3,(n-5):n)]+prec[-c(1:4,(n-4):n)]+prec[-c(1:5,(n-3):n)]+prec[-c(1:6,(n-2):n)]+prec[-c(1:7,(n-1):n)]+prec[-c(1:8,n)]                                                                                          
+
+cor(cbind(evap=data1$evap[-c(1:9)],precacum1=precacum1[-c(1:8)],precacum2=precacum2[-c(1:7)],precacum3=precacum3[-c(1:6)],precacum4=precacum4[-c(1:5)],precacum5=precacum5[-c(1:4)],precacum6=precacum6[-c(1:3)],precacum7=precacum7[-c(1:2)],precacum8=precacum8[-1],precacum9))
+data1$precacum=c(rep(NA,9),precacum9)
+
+data2 <-dataTot[dataTot$depthT=="5" & dataTot$lysimeter=="concrete_slabs",]
+prec=data2$prec
+n=length(prec)
+precacum1=prec[-c(n)]+prec[-c(1)]
+precacum2=prec[-c((n-1):n)]+prec[-c(1,n)]
+precacum3=prec[-c((n-2):n)]+prec[-c(1,(n-1):n)]+prec[-c(1:2,n)]
+precacum4=prec[-c((n-3):n)]+prec[-c(1,(n-2):n)]+prec[-c(1:2,(n-1):n)]+prec[-c(1:3,n)]
+precacum5=prec[-c((n-4):n)]+prec[-c(1,(n-3):n)]+prec[-c(1:2,(n-2):n)]+prec[-c(1:3,(n-1):n)]+prec[-c(1:4,n)]
+precacum6=prec[-c((n-5):n)]+prec[-c(1,(n-4):n)]+prec[-c(1:2,(n-3):n)]+prec[-c(1:3,(n-2):n)]+prec[-c(1:4,(n-1):n)]+prec[-c(1:5,n)]
+precacum7=prec[-c((n-6):n)]+prec[-c(1,(n-5):n)]+prec[-c(1:2,(n-4):n)]+prec[-c(1:3,(n-3):n)]+prec[-c(1:4,(n-2):n)]+prec[-c(1:5,(n-1):n)]+prec[-c(1:6,n)]
+precacum8=prec[-c((n-7):n)]+prec[-c(1,(n-6):n)]+prec[-c(1:2,(n-5):n)]+prec[-c(1:3,(n-4):n)]+prec[-c(1:4,(n-3):n)]+prec[-c(1:5,(n-2):n)]+prec[-c(1:6,(n-1):n)]+prec[-c(1:7,n)]
+precacum9=prec[-c((n-8):n)]+prec[-c(1,(n-7):n)]+prec[-c(1:2,(n-6):n)]+prec[-c(1:3,(n-5):n)]+prec[-c(1:4,(n-4):n)]+prec[-c(1:5,(n-3):n)]+prec[-c(1:6,(n-2):n)]+prec[-c(1:7,(n-1):n)]+prec[-c(1:8,n)]                                                                                          
+
+cor(cbind(evap=data2$evap[-c(1:9)],precacum1=precacum1[-c(1:8)],precacum2=precacum2[-c(1:7)],precacum3=precacum3[-c(1:6)],precacum4=precacum4[-c(1:5)],precacum5=precacum5[-c(1:4)],precacum6=precacum6[-c(1:3)],precacum7=precacum7[-c(1:2)],precacum8=precacum8[-1],precacum9))
+data2$precacum=c(rep(NA,9),precacum9)
+```
+
+
+## Summary the of `lysimeter 9 and 10`
+```{r echo=F, error=F, message=F, warning=F}
+
+data3 <- rbind(data1,data2)
+data3$lysimeter <- as.factor(data3$lysimeter)
+summary(data3)
+
+```
+
+
+## GAM model related to `lysimeter 9`
+```{r echo = F, warning= F, error= F, message= F}
+gam_model1 <- gam(evap ~s(vwc)+ s(T)+ s(precacum)+s(prec)+ s(sol_radiation) + s(Rel_humidity) , data =data1, method = "REML" )
+
+summary(gam_model1)
+```
+
+
+```{r}
+# Fit the model
+mod4 <- gam(city.mpg ~ s(weight) + s(length) + s(price)  + s(width),
+                 data = mpg, method = "REML")
+
+
+
+summary(mod4)
+?mpg
+```
+
+****
+
+
+
+
+
+```{r}
+# Make the plot with residuals
+plot(nonlin_model, residuals =TRUE)
+
+
+```
+
+```{r}
+
+
+# Change shape of residuals
+plot(nonlin_model, residuals =TRUE, pch= 1, cex= 1)
+```
+
+
+
+## plot the data
+```{r echo = F, warning= F, message= F, error= F}
+plot(gam_model1,rug=T, pch = 1, all.terms = T,se=T,scale=0)
+```
+
+
+
+```{r}
+gam.check(gam_model1, pch=19, cex=.3)
+```
+
+
+
+
+
+```{r}
+gam.check(nonlin_model,pch=19,cex=.3)
+?gam.check
+```
+
+
+
+
+
+
+
+```{r}
+#quality of ou model, Full=TRUE report overall concurvity for each smooth, how much each smooth predetermined by all the other smooths, worst case >0.8 look carefully in the model, "interpretation" 
+# full =FALE, each variable are predetermined by each other variables,"close relationship
+concurvity(mod4,full = TRUE)
+#which smooth is least pre-determined by all the others 
+```
+
+```{r}
+concurvity(mod4,full = FALSE)
+#Which two variables have the greatest worst-case concurvity?
+```
+
+
+
+
+
+```{r}
+#geospatial data of heavy metal soil pollution along the Meuse reive in Netherlands
+?sp::meuse
+```
+
+
+```{r}
+data("meuse")
+mod <- gam(cadmium ~ s(x, y), data = meuse, method = "REML")
+
+# Inspect the model
+summary(mod)
+coef(mod)
+#How many basis functions are used in the two-dimensional smooth?
+```
+
+
+
+
+
+
+```{r}
+mod1<- gam(cadmium ~ s(x, y) + s(dist) + s(elev), 
+              data = meuse, method = "REML")
+
+
+summary(mod1)
+```
+
+
+
+```{r}
+plot(mod)
+```
+
+
+```{r}
+plot(mod, scheme =1)
+```
+
+```{r}
+# yellow color present larger predictions and red colors smaller ones
+plot(mod, scheme=2)
+```
+
+****
+
+
+
+
+```{r}
+plot(mod1, pages=1)
+```
+
+
+
+```{r}
+?vis.gam
+```
+
+
+```{r}
+
+#3d
+plot(mod1, scheme = 1, pages =1 )
+
+```
+```{r}
+#heat map
+plot(mod1, scheme = 2, pages = 1)
+```
+
+
+```{r}
+#type of plot
+vis.gam(mod1, view = c("x", "y"), 
+        plot.type = "persp", se = 2)
+```
+
+
+```{r}
+#thera ,horizental.Rotate the same plot
+vis.gam(mod1, view = c("x", "y"), 
+        plot.type = "persp", se = 2, theta = 135)
+```
+
+```{r}
+# Make plot with 5% extrapolation, extrapolating out from the data 5%
+vis.gam(mod1, view = c("x", "y"), 
+        plot.type = "contour", too.far = 0.05)
+
+# Overlay data
+points(meuse)
+
+```
+```{r}
+# Make plot with 10% extrapolation, extrapolating out from the data 10%.
+vis.gam(mod1, view = c("x", "y"), 
+        plot.type = "contour", too.far = 0.1)
+
+# Overlay data
+points(meuse)
+```
+
+```{r}
+# Make plot with 25% extrapolation
+vis.gam(mod1, view = c("x", "y"), 
+        plot.type = "contour", too.far = 0.25)
+
+# Overlay data
+points(meuse)
+```
+
+***
+
+
+
+
+
+
+```{r}
+mod3 <- gam(copper ~ s(dist, by = landuse) + landuse, 
+               data = meuse, method = "REML")
+
+
+summary(mod3)
+```
+
+
+```{r}
+# Fit a model with factor-smooth interaction
+mod_4 <- gam(copper ~ s(dist, landuse, bs = "fs"), 
+              data = meuse, method = "REML")
+
+# Examine the summary
+summary(mod_4)
+
+```
+```{r}
+# Plot both the models 
+plot(mod3, pages = 1)
+plot(mod_4, pages = 1)
+```
+##You can observe the differences between different continuous-categorical interaction types by visualizing them. Here, you'll look at the different ways the by-type and factor-smooth-type interactions are plotted
+```{r}
+# Plot both the models with vis.gam()
+vis.gam(mod3, view = c("dist", "landuse"), plot.type = "persp")
+vis.gam(mod_4, view = c("dist", "landuse"), plot.type = "persp")
+# fs model has fewer wild swings - it is more stable
+```
+
